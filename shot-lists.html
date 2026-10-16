@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Gathering 2026 Shot Lists</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: call-sheet header, shooter tabs + day tabs, progress strip, then one card per location block with tick rows. Phone-first, single column. */
+:root{
+  --bg:#f2f5f4; --surface:#ffffff; --ink:#17211f; --muted:#5b6966; --line:#d6dddb; --line-soft:#e8eeec;
+  --accent:#2f5d50; --accent-soft:#dcebe5; --done:#8a9794; --star:#a8701a; --ot:#d4500f;
+  --stage:#3d5a80; --act:#2e7a5c; --eve:#5e4b8b; --edit:#93650f;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111715; --surface:#18201e; --ink:#e4ebe9; --muted:#97a6a2; --line:#2b3532; --line-soft:#1f2826;
+  --accent:#7fc0aa; --accent-soft:#1d3029; --done:#6b7a76; --star:#e0b04a; --ot:#ff7a3d;
+  --stage:#8fb0dc; --act:#7cc7a6; --eve:#b7a3e6; --edit:#e0b866; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111715; --surface:#18201e; --ink:#e4ebe9; --muted:#97a6a2; --line:#2b3532; --line-soft:#1f2826;
+  --accent:#7fc0aa; --accent-soft:#1d3029; --done:#6b7a76; --star:#e0b04a; --ot:#ff7a3d;
+  --stage:#8fb0dc; --act:#7cc7a6; --eve:#b7a3e6; --edit:#e0b866; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.4;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{border-bottom:2px solid var(--ink);padding-bottom:12px;display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,42px);line-height:1;margin:2px 0 0;text-transform:uppercase;text-wrap:balance}
+.sync{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block}
+.sync.live i{background:var(--act)}
+.sync.ro i{background:var(--ot)}
+
+.rule{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:14px}
+.rule b{font-weight:600}
+
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px}
+.who button{font:inherit;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
+.who .nm{font-family:var(--display);font-size:22px;font-weight:700;text-transform:uppercase;line-height:1}
+.who .rl{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .ct{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.who button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.who button[aria-selected="true"] .rl,.who button[aria-selected="true"] .ct{color:var(--bg);opacity:.75}
+
+.days{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px}
+.days button{flex:1;font:600 15px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;border:0;background:transparent;color:var(--muted);padding:10px 6px;border-radius:5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.days button small{font:400 11px var(--mono);letter-spacing:0;text-transform:none}
+.days button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+
+.progress{display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:8px;background:var(--line-soft);border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);width:0}
+.progress .n{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.filter{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:5px 12px;cursor:pointer;white-space:nowrap}
+.filter[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+
+.block{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.bh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px 12px;padding:12px 14px 10px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.bh .l{display:flex;flex-direction:column;gap:2px;min-width:0}
+.bh .tm{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bh h2{font-family:var(--display);font-size:21px;font-weight:600;margin:0;line-height:1.1;text-wrap:balance}
+.bh .wh{font-size:13.5px;color:var(--muted)}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.tag.stage{color:var(--stage)}.tag.act{color:var(--act)}.tag.eve{color:var(--eve)}
+.tag.ot{color:var(--ot)}.tag.edit{color:var(--edit)}
+.bh .tags{display:flex;gap:6px;flex-wrap:wrap}
+.bh .cnt{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+ul{list-style:none;margin:0;padding:4px 0}
+li label{display:flex;gap:12px;align-items:flex-start;padding:9px 14px;cursor:pointer;min-height:44px}
+li label:hover{background:var(--line-soft)}
+li input{position:absolute;opacity:0;width:1px;height:1px}
+.box{flex:none;width:22px;height:22px;border:2px solid var(--line);border-radius:6px;display:grid;place-items:center;margin-top:1px;background:var(--surface)}
+.box svg{width:14px;height:14px;opacity:0}
+input:checked+.box{background:var(--accent);border-color:var(--accent)}
+input:checked+.box svg{opacity:1}
+.box svg path{stroke:var(--surface)}
+.txt{font-size:15px}
+.txt .st{color:var(--star);font-weight:600;margin-right:4px}
+input:checked~.txt{color:var(--done);text-decoration:line-through;text-decoration-thickness:1px}
+.empty{padding:20px;text-align:center;color:var(--muted);font-size:14px}
+.eod{border-style:dashed}
+.note{font-size:13px;color:var(--muted)}
+</style>
+
+<style>.sitenav{display:flex;gap:16px;flex-wrap:wrap;font:500 13px/1 var(--mono, ui-monospace, Menlo, monospace);letter-spacing:.04em;text-transform:uppercase;margin:0 auto 12px;max-width:1180px}.sitenav a{color:var(--muted,#5b6966);text-decoration:none;padding:6px 0;border-bottom:2px solid transparent}.sitenav a[aria-current]{color:var(--ink,#17211f);border-color:var(--ink,#17211f)}.sitenav a:focus-visible{outline:2px solid var(--accent,#2f5d50);outline-offset:2px}</style><nav class="sitenav"><a href="index.html">Home</a><a href="schedule.html">Crew schedule</a><a href="shot-lists.html" aria-current="page">Shot lists</a></nav>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">The Gathering 2026 · Fairmont Banff Springs · Oct 21 to 23</div>
+    <h1>Shot Lists by Shooter</h1>
+    <div class="sync" id="sync"><i></i><span>Ticks save on this phone</span></div>
+  </header>
+
+  <div class="rule"><b>Applies everywhere:</b> any signage, brand pop-up or logo, grab a clip even if it's not listed. Logos whole and readable. No empty seats in frame. Best clips have a person, a brand and Banff in one shot.</div>
+
+  <div class="who" role="tablist" id="who"></div>
+  <div class="days" role="tablist" id="days"></div>
+  <div class="progress">
+    <div class="bar"><span id="barfill"></span></div>
+    <span class="n" id="count"></span>
+    <button class="filter" id="hideDone" aria-pressed="false">Hide done</button>
+  </div>
+  <div id="list" style="display:flex;flex-direction:column;gap:12px"></div>
+  <p class="note">Your ticks save on this phone and browser only. Use the same phone all day.</p>
+</div>
+
+<script>
+const PEOPLE={
+  aaron:{name:"Aaron",role:"Hotel side · Acquia"},
+  bence:{name:"Bence",role:"WestJet · backup nights"},
+  oliver:{name:"Oliver",role:"Linqia · evening run"},
+  shane:{name:"Shane",role:"Editor · sessions",ed:true},
+  zach:{name:"Zach",role:"Editor · overnight recap",ed:true}
+};
+const DAYN={wed:["Wed","Oct 21"],thu:["Thu","Oct 22"],fri:["Fri","Oct 23"],sat:["Sat","Oct 24"]};
+
+/* Reusable lists */
+const STAGE=[
+  "*1 hero clip of each speaker, Tier 1 names first, multiple angles",
+  "Gestures, expressions, side and frontal angles",
+  "Panels: wide plus stage L and R, every panelist covered",
+  "Audience reactions: laughter, applause, phones up, note-taking",
+  "Stage environment: sponsor logos, projections, wide pull-back from the back",
+  "Transitions: walk-ons, applause, stage resets",
+  "POV from the speaker looking out, and from the audience",
+  "VIP seating FULL and engaged, VIP signage"];
+/* s(time, title, where, kind, items, ot) */
+const s=(t,title,where,kind,items,ot=false)=>({t,title,where,kind,items,ot});
+
+/* Activations grouped by room, with booth numbers from the Riverview Lounge and Conference Centre maps. */
+const RIVERVIEW=t=>s(t,"Riverview Lounge booths","Hotel Hub, Mezzanine 2, beside Acquia","act",[
+  "Riverview Lounge EMPTY, then FULL from the same angle",
+  "*#14 CampBrand swag + merch booth (new this year): booth and guests",
+  "#12 Radiant Health Wellness Lounge: IV therapy, massage, soft light",
+  "#13 Bold Move Wall: people using it",
+  "#15 Acquia Connection Garden",
+  "#16 Coffee Lounge: Heritage Coffee & Vendo Media (charity donation)",
+  "Coffee lounge seating with guests",
+  "D1D golf simulator in use",
+  "tabl'eau water station"]);
+const CULT_ROOMS=t=>s(t,"CULT lounges","Strathcona + Angus Rooms, Mezzanine 2","act",[
+  "CULT Lounge (Strathcona Room): the space, guests, CULT branding",
+  "CULT Speakeasy & Private Lounge (Angus Room): entrance and inside",
+  "Grapes Wine Bar & Cellar on the way through (Mezzanine 2)"]);
+const MAIN_FLOOR=t=>s(t,"Main floor","Mt. Stephen Hall + Rundle Bar","act",[
+  "Registration & Guest Services signage, Mt. Stephen Hall",
+  "The Gathering Lounge (Rundle Bar): guests, signage",
+  "Volunteer HQ (Oak Room): briefings, Flow Experts (nice to have)"]);
+const CONF_FRONT=t=>s(t,"Van Horne foyer booths","Conference Centre, booths #1 to #5","act",[
+  "WestJet Guest Services desk",
+  "Krump Room (WestJet): the space, WestJet branding",
+  "#1 and #2 Air Labs",
+  "*#3 Process Colour Flash Tattoos: the booth, guests getting tattooed",
+  "#4 Village Brewery",
+  "#5 OnLocation: hair styling + massages",
+  "Win Wall (community wall): people adding to it",
+  "Photo Op: guests using it",
+  "Bar 1"]);
+const CONF_LINQIA=t=>s(t,"Booths by the Linqia Stage","Conference Centre, booths #6 to #11","act",[
+  "#6 The Way",
+  "#7 TGF Guest Services",
+  "#8 Candidly",
+  "#9 Routine Natural Beauty",
+  "#10 Podcast Booth (DIRTT): a live recording",
+  "#11 Blee",
+  "ICA / Eclipse Coffee Lounge EMPTY, then FULL",
+  "COI furniture in the coffee lounge",
+  "Hall of Fame wall (hard wall by Linqia)"]);
+const CONF_TBC=t=>s(t,"Not on the maps yet","Spots TBC","act",[
+  "Big Chief Meat Snacks pop-ups",
+  "Water stations: Pattison Outdoor",
+  "Pheedloop app in use on someone's phone in a TGF space"]);
+const SETUPS=[
+  "Riverview Lounge EMPTY before guests",
+  "#12 Radiant Health, #13 Bold Move Wall, #14 CampBrand before guests",
+  "#15 Acquia Connection Garden, #16 Coffee Lounge before guests",
+  "D1D golf simulator before guests",
+  "CULT Lounge (Strathcona Room) before guests"];
+const EOD=[
+  "Hero clip of every speaker on your stage today",
+  "Empty-vs-full pairs for every space you own",
+  "One clean, logo-readable clip of every partner you own",
+  "Cards offloaded and handed off for the daily recap"];
+
+const SHOTS={
+aaron:{
+ wed:[
+  s("8:30 to 9:15 AM","Pre-doors","Acquia + Alhambra","stage",[
+   "*Acquia Stage EMPTY, wide from the back, logos readable",
+   "*Alhambra Stage EMPTY, wide from the back",
+   "VIP seating EMPTY, VIP signage"]),
+  s("9:15 AM to 4:30 PM","Acquia sessions (Alhambra too until 12:15)","Hotel side","stage",STAGE),
+  CULT_ROOMS("Breaks all day"),
+  s("4:30 to 5:45 PM","Opening Party setup","Rundle Bar + Terrace","eve",[
+   "*Rundle Bar EMPTY before doors. Note the angle: Oliver shoots FULL from it",
+   "Terrace activations set up",
+   "Kuma Outdoor Gear pop-up set up",
+   "CULT hidden sidecar: entrance and inside, before guests",
+   "Process Colour tattoo sign-up bar"]),
+  s("5:45 to 6:30 PM","Late-day activations","Mt. Stephen Hall + video booth","act",[
+   "Video booth: lineups, people using it",
+   "Activations FULL"])],
+ thu:[
+  s("8:30 to 9:30 AM","Riverview Lounge setups","Hotel Hub, Mezzanine 2","act",SETUPS),
+  s("9:30 AM to 5:00 PM","Acquia sessions","Acquia Stage","stage",STAGE),
+  s("12:00 to 1:00 PM","Lunches","Mt. Stephen Hall + Alhambra","act",[
+   "All Access Lunch (Mt. Stephen): grab-and-go, branded signage, guests socializing",
+   "VIP, Pinnacle & Speaker Lunch (Alhambra): buffet, branded signage, dining, toasts",
+   "Alhambra as the VIP lounge: the space and pass holders"]),
+  RIVERVIEW("Breaks all day"),
+  CULT_ROOMS("Breaks all day"),
+  MAIN_FLOOR("Breaks all day"),
+  s("5:00 to 6:30 PM","Creator Party (Disney)","Fairmont Terrace","eve",[
+   "*Terrace wide with the mountain backdrop and Disney branding, before guests",
+   "Disney buildout and decor details",
+   "Same angle FULL at peak",
+   "All activations in use",
+   "Drinks, food, decor",
+   "Golden light before sunset (near 6:40 PM)"])],
+ fri:[
+  s("8:30 to 9:30 AM","Riverview Lounge setups","Hotel Hub, Mezzanine 2","act",SETUPS),
+  s("9:30 AM to 4:30 PM","Acquia sessions","Acquia Stage","stage",STAGE),
+  s("12:00 to 1:00 PM","Lunches","Mt. Stephen Hall + Alhambra","act",[
+   "All Access Lunch: signage, socializing",
+   "VIP, Pinnacle & Speaker Lunch: buffet, dining, toasts"]),
+  RIVERVIEW("Breaks all day"),
+  CULT_ROOMS("Breaks all day"),
+  MAIN_FLOOR("Breaks all day"),
+  s("4:30 to 5:30 PM","Partner sweep","Hotel side","act",[
+   "Acquia: enough for a standalone reel",
+   "CULT: enough for a standalone reel",
+   "CampBrand: enough for a standalone reel",
+   "Banff Lodging: confirm with Sam where they are"]),
+  s("5:30 to 6:30 PM","Red carpet + Cocktail Hour","Mainstage foyer","eve",[
+   "Red carpet arrivals, outfits, groups",
+   "ICA / Effies presence and branding",
+   "Cocktail conversations, branded bar"])]
+},
+bence:{
+ wed:[
+  s("8:30 to 9:00 AM","Registration EMPTY","Mt. Stephen Hall","act",[
+   "*Wide of registration with signage and sponsor logos, before doors",
+   "Mark the tripod spot for the FULL shot",
+   "Partner activations along the registration route"]),
+  s("9:00 to 11:00 AM","Arrivals","Fairmont entrance + lobby","act",[
+   "Arrivals: luggage, hugs, greetings",
+   "Entrance with the flags",
+   "Range Rovers: speakers and VIPs stepping in and out",
+   "Linqia key cards + Gold Floor check-in (VIP / Pinnacle reel)",
+   "Candid intros, handshakes, first coffees, selfies"]),
+  s("11:00 AM to 12:00 PM","Registration FULL","Mt. Stephen Hall","act",[
+   "*Same marked angle at peak",
+   "Video booth: lineups, people using it, overhead angle",
+   "Pheedloop app in use on a phone"]),
+  RIVERVIEW("12:30 to 4:15 PM"),
+  MAIN_FLOOR("12:30 to 4:15 PM"),
+  s("4:45 to 6:30 PM","Legends Dinner","Fairmont lobby → Sky Bistro","eve",[
+   "Lobby meet-up, VIPs heading out (depart 5:00 sharp)",
+   "Gondola: boarding, guests in the cabin, the view up",
+   "Summit b-roll with the Banff backdrop, golden hour",
+   "Dining setup before guests: table, place settings, candles, conversation cards",
+   "Luxury b-roll: plates, branded cocktails, cheers, glassware with the view",
+   "*Linqia branding clearly in frame (sponsor)"]),
+  s("6:30 to 9:00 PM","Legends Dinner, overtime","Sky Bistro","eve",[
+   "Sunset at the summit (near 6:40 PM)",
+   "*Poet Arielle: wide of the room watching",
+   "*Poet Arielle: tight",
+   "Audience reactions to Arielle",
+   "Conversation cards in use, connections being made",
+   "Night view on the ride down"],true)],
+ thu:[
+  s("8:30 to 9:15 AM","Pre-doors: hotel side","Acquia Stage","stage",[
+   "*Acquia Stage EMPTY, wide from the back, logos readable",
+   "*VIP seating EMPTY, VIP signage",
+   "Walk to WestJet for 9:30"]),
+  s("9:30 to 10:00 AM","Opening","WestJet Main Stage","stage",[
+   "*Tail of the welcome video as the screen cuts to WELCOME TO THE GATHERING",
+   "Opening walk-on and applause"]),
+  s("10:00 AM to 5:00 PM","WestJet + Linqia sessions","Conference Centre","stage",[
+   ...STAGE,
+   "WestJet airplane snacks being enjoyed in VIP seating",
+   "Behind the Screen Lounge: whole space EMPTY",
+   "Behind the Screen Lounge: FULL, Pinnacle pass holders"]),
+  s("10:00 AM to 12:00 PM","CULT Inner Sanctums","3rd floor, Conference Centre","stage",[
+   "Inner Sanctum #1: intimate setting, candid attendees",
+   "Inner Sanctum #2: intimate setting, candid attendees",
+   "Q&A moments",
+   "CULT branding"]),
+  CONF_FRONT("Breaks all day"),
+  CONF_LINQIA("Before 12:15, until Oliver arrives"),
+  CONF_TBC("Breaks all day"),
+  s("6:00 to 7:30 PM (overtime from 6:30)","Good Folk Supper Club","Venue TBC","eve",[
+   "Venue wide, set table before guests",
+   "Same angle FULL at peak",
+   "Candlelight, decor, florals",
+   "Plates arriving, sharing, pouring wine, toasts",
+   "Host welcome / speeches"],true),
+  s("7:50 to 11:00 PM","Fuck Up Nights","Dusty Boot Saloon","eve",[
+   "Exterior signage, guests heading in",
+   "Saloon atmosphere: signage, bar, neon, cowboy details",
+   "*Speakers on the mic mid-story, big expressions",
+   "*Crowd reactions: laughing, cheering, cringing",
+   "Every speaker covered, wide and tight"],true)],
+ fri:[
+  s("8:30 to 9:15 AM","Pre-doors: conference side","WestJet + Linqia","stage",[
+   "*WestJet Main Stage EMPTY, wide from the back",
+   "*Linqia Stage EMPTY, wide from the back",
+   "*VIP seating EMPTY, VIP signage",
+   "WestJet airplane snacks set out in VIP seating",
+   "Conference Centre booths #1 to #11 before guests"]),
+  s("9:15 AM to 4:30 PM","WestJet + Linqia sessions","Conference Centre","stage",[
+   ...STAGE,
+   "WestJet airplane snacks in VIP seating",
+   "Behind the Screen Lounge FULL"]),
+  s("9:15 AM to 12:15 PM","CULT Inner Sanctums","3rd floor, Conference Centre","stage",[
+   "Inner Sanctums #1 and #2: candid attendees, Q&A",
+   "CULT branding"]),
+  CONF_FRONT("Breaks all day"),
+  CONF_LINQIA("Before 12:15, until Oliver arrives"),
+  CONF_TBC("Breaks all day"),
+  s("4:30 to 5:30 PM","Gala room EMPTY","Mainstage (Van Horne)","eve",[
+   "*Gala room EMPTY with full dining setup, wide from the back",
+   "Table details: settings, centrepieces, place cards",
+   "Stage and screens before doors"]),
+  s("5:30 to 7:00 PM (overtime from 6:30)","Cocktail Hour","Mainstage foyer","eve",[
+   "Drinks, conversations, branded bar",
+   "Small groups, connection cards in use",
+   "Sponsor bars",
+   "6:45 room filling"]),
+  s("7:00 to 10:00 PM","Gala, stage side","Mainstage (Van Horne)","eve",[
+   "*Home Depot on stage accepting, logo on screen behind",
+   "*ESPN (Amex) on stage accepting, logo on screen",
+   "*Disney on stage accepting, logo on screen",
+   "*Budweiser on stage accepting, logo on screen",
+   "*Chick-fil-A on stage accepting, logo on screen",
+   "*Trophy hand-off close-up for every award",
+   "*One Club presentation with APPLE on screen",
+   "Presenters at the mic"],true),
+  s("10:00 PM to 12:00 AM","After Party (only shooter)","Location TBC","eve",[
+   "*DJ wide and tight",
+   "Dancing, last-night energy",
+   "Brand activations in use",
+   "Candids and groups",
+   "*Reel clips: DJ drop, crowd pan"],true)]
+},
+oliver:{
+ wed:[
+  s("12:15 to 4:30 PM","Alhambra sessions","Alhambra Ballroom","stage",STAGE),
+  s("5:00 to 5:30 PM","Fairmont exteriors","Fairmont","act",[
+   "Golden light exteriors of the Fairmont for the aftermovie",
+   "Batteries and cards full for the night"]),
+  s("5:45 to 6:15 PM","Sudden Sally Supper Club","Venue TBC","eve",[
+   "Venue wide, set table before guests",
+   "Candlelight, decor, florals",
+   "Plates arriving, sharing, pouring wine, a toast",
+   "Host welcome"]),
+  s("6:35 to 7:40 PM","Disney Film Screening","Lux Cinema","eve",[
+   "Exterior of Lux, guests arriving, Disney signage",
+   "*Speakers introducing the evening, wide and tight",
+   "Full theatre, cozy vibe: popcorn, blankets, faces lit by the screen",
+   "Audience reactions during the intro"]),
+  s("7:55 to 10:00 PM","Opening Party","Rundle Bar + Terrace","eve",[
+   "*Rundle Bar FULL from Aaron's EMPTY angle",
+   "Arrival energy, signage lit up",
+   "Branded cocktails and food",
+   "Kuma Outdoor Gear pop-up: guests trying gear",
+   "CULT sidecar: entrance, inside, guests discovering it",
+   "Process Colour tattoo sign-up in use",
+   "Activations, giveaways, photobooths, Terrace activations",
+   "Networking moments",
+   "Dance floor: DJ, crowd, lighting",
+   "*Reel clips: cheers, the DJ drop, slow crowd pan"])],
+ thu:[
+  s("12:15 to 4:45 PM","Linqia sessions","Linqia Stage, Beatty Coleman Room","stage",[
+   ...STAGE,
+   "Linqia branding on stage"]),
+  CONF_LINQIA("Breaks, 12:15 to 4:45 PM"),
+  s("5:15 to 6:20 PM","Creator Party, second angle","Fairmont Terrace","eve",[
+   "Creators filming, posing, phones out",
+   "Activations in use",
+   "Drinks and food details (Aaron holds wides and branding)"]),
+  s("6:35 to 7:05 PM","BSSP Igloo exterior","Location TBC","eve",[
+   "Hero exterior: igloo glowing at blue hour",
+   "Wide, mid, details, one slow push",
+   "Doorway clip of guests seated, only if allowed",
+   "Enough for a 15 to 30 second reel"]),
+  s("7:20 to 8:15 PM","Disney Salon Dinner","Grapes Wine Bar, Mezzanine 2","eve",[
+   "Buildout, design and styling before guests",
+   "Full table",
+   "Disney welcome remarks",
+   "People eating, toasts"]),
+  s("8:30 to 10:00 PM","Jamboree","Melissa's Missteak","eve",[
+   "Exterior signage, guests heading in",
+   "Sponsorship moments",
+   "*Live music: performers wide",
+   "*Live music: performers tight",
+   "Dancing, laughter, groups singing along",
+   "Peak crowd pan before you wrap at 10"])],
+ fri:[
+  s("12:15 to 4:15 PM","Linqia sessions","Linqia Stage, Beatty Coleman Room","stage",STAGE),
+  CONF_LINQIA("Breaks, 12:15 to 4:15 PM"),
+  s("5:30 to 6:30 PM","Backstage + trophies","Mainstage","eve",[
+   "Trophy details on the table",
+   "Presenters prepping",
+   "Award order confirmed with Sam"]),
+  s("7:00 to 10:00 PM","Gala, room side","Mainstage (Van Horne)","eve",[
+   "*Gala room FULL, wide from the back at peak",
+   "Wide of the stage with brand logos on screen",
+   "Past inductees on screen",
+   "Applause, standing ovations",
+   "Tables celebrating",
+   "People socializing and enjoying dinner",
+   "ICA / Effies presence and branding"])]
+}};
+
+/* Editors */
+const shaneDay=(prev,stages,folders)=>[
+  s("9:00 AM to 7:00 PM",`Edit ${prev} sessions`,stages,"edit",[
+   "*Tier 1 speakers cut first",
+   "One file per session",
+   "File name: Day - Stage - Speaker(s) - Session title",
+   "TGF sonic intro added",
+   "TGF sonic outro added",
+   "Clean audio pass on every session",
+   "Logos whole when cutting to the wide",
+   ...folders,
+   "Sessions still to cut logged for tomorrow"])];
+const zachNight=(label,dayDrops,dayMust,nightDrops,nightMust)=>[
+  s("9:30 PM to 7:30 AM",label,"Edit station","edit",[
+   ...dayMust,
+   ...nightMust,
+   "Music, colour, titles",
+   "No cropped partner logos",
+   "Vertical master",
+   `*Uploaded to DAILY RECAP VIDEOS as ${label} by 7:30 AM`])];
+
+SHOTS.shane={
+ thu:shaneDay("Wed","Acquia + Alhambra",["Acquia sessions in the ACQUIA STAGE folder","Alhambra sessions in the folder Sam confirms"]),
+ fri:shaneDay("Thu","WestJet, Linqia, Acquia, Inner Sanctums",["WestJet sessions in WESTJET MAIN STAGE","Linqia sessions in LINQIA STAGE","Acquia sessions in ACQUIA STAGE","Inner Sanctums placement confirmed with Sam"]),
+ sat:shaneDay("Fri","WestJet, Linqia, Acquia",["WestJet sessions in WESTJET MAIN STAGE","Linqia sessions in LINQIA STAGE","Acquia sessions in ACQUIA STAGE"])};
+SHOTS.zach={
+ wed:zachNight("WED OCT 21 RECAP",
+  ["Aaron's 6:30 PM drop offloaded (Acquia, Alhambra, hotel side)","Bence's 9 PM drop offloaded (registration, arrivals, Legends Dinner)"],
+  ["Registration empty-vs-full pair","Arrivals, the flags, Range Rovers","Stage hero clips from Acquia and Alhambra","Activations with logos whole","Legends Dinner: gondola, summit, Linqia branding"],
+  ["Oliver's 10 PM drop offloaded (Sudden Sally, Lux, Opening Party)"],
+  ["Disney screening intro","Supper club table moment","Opening Party: DJ drop, cheers, slow crowd pan for the close"]),
+ thu:zachNight("THU OCT 22 RECAP",
+  ["Bence's 5:45 PM drop offloaded (WestJet + Linqia)","Aaron's 6:30 PM drop offloaded (Acquia, hotel side, Creator Party)"],
+  ["WELCOME TO THE GATHERING screen moment","Hero speakers from all three stages","VIP seating and WestJet airplane snacks","Lunches and activations","Creator Party with Disney branding"],
+  ["Bence's 11 PM drop offloaded (Good Folk, Fuck Up Nights)","Oliver's 10 PM drop offloaded (Igloo, Disney Salon, Jamboree)"],
+  ["Igloo glowing at blue hour","Fuck Up Nights crowd reactions","Jamboree live music and singalong"]),
+ fri:zachNight("FRI OCT 23 RECAP",
+  ["Aaron's 6:30 PM drop offloaded (Acquia, plus Bence's day cards)","Bence's 10 PM gala stage cards offloaded"],
+  ["Last sessions and partner sweep","Gala room empty","Red carpet and Cocktail Hour"],
+  ["Bence and Oliver's 10 PM drop offloaded (gala room side, After Party)"],
+  ["*Each BHoF brand on stage, logo on screen","*Trophy hand-offs","*One Club presentation with Apple on screen","Standing ovations, tables celebrating","After Party energy"])};
+
+/* Build ids + add end-of-day card for shooters */
+for(const p in SHOTS)for(const d in SHOTS[p]){
+  if(!PEOPLE[p].ed)SHOTS[p][d].push(s("Before you wrap","End of day","","eod",EOD));
+  SHOTS[p][d].forEach((blk,bi)=>{blk.rows=blk.items.map((it,ii)=>({id:`${p}-${d}-${bi}-${ii}`,star:it.startsWith("*"),text:it.replace(/^\*/,"")}))});
+}
+
+const esc=x=>String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const KTAG={stage:["stage","Stage"],act:["act","Activations"],eve:["eve","Evening"],eod:["act","Checklist"],edit:["edit","Editing"]};
+let state={}, who="bence", day="wed", hideDone=false, db=null, readonly=false;
+const LS="gathering-shots-v1";
+function lsLoad(){try{return JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){return{}}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
+
+function counts(p,d){let n=0,t=0;for(const b of (SHOTS[p][d]||[]))for(const r of b.rows){t++;if(state[r.id])n++}return[n,t]}
+
+function renderTabs(){
+  document.getElementById("who").innerHTML=Object.entries(PEOPLE).map(([k,m])=>{
+    const[n,t]=counts(k,day);
+    return `<button role="tab" aria-selected="${k===who}" data-w="${k}"><span class="nm">${m.name}</span><span class="rl">${esc(m.role)}</span><span class="ct">${t?`${n}/${t} done`:"Off today"}</span></button>`}).join("");
+  document.getElementById("days").innerHTML=Object.entries(DAYN).map(([k,[a,b]])=>{
+    const[n,t]=counts(who,k);
+    return `<button role="tab" aria-selected="${k===day}" data-d="${k}">${a} ${b}<small>${t?`${n}/${t}`:"Off"}</small></button>`}).join("");
+  document.querySelectorAll("[data-w]").forEach(el=>el.onclick=()=>{who=el.dataset.w;persistView();render()});
+  document.querySelectorAll("[data-d]").forEach(el=>el.onclick=()=>{day=el.dataset.d;persistView();render()});
+}
+const tick='<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function render(){
+  renderTabs();
+  const[n,t]=counts(who,day);
+  document.getElementById("barfill").style.width=(t?n/t*100:0)+"%";
+  document.getElementById("count").textContent=`${n} / ${t}`;
+  if(!SHOTS[who][day]){document.getElementById("list").innerHTML=`<div class="empty">${PEOPLE[who].name} is off on ${DAYN[day].join(" ")}.</div>`;return}
+  const html=SHOTS[who][day].map(b=>{
+    const rows=b.rows.filter(r=>!(hideDone&&state[r.id]));
+    const bn=b.rows.filter(r=>state[r.id]).length;
+    if(hideDone&&!rows.length)return "";
+    const[tc,tl]=KTAG[b.kind];
+    return `<section class="block ${b.kind==="eod"?"eod":""}">
+      <div class="bh"><div class="l"><span class="tm">${esc(b.t)}</span><h2>${esc(b.title)}</h2>${b.where?`<span class="wh">${esc(b.where)}</span>`:""}</div>
+        <div class="tags"><span class="tag ${tc}">${tl}</span>${b.ot?'<span class="tag ot">Overtime</span>':""}<span class="cnt">${bn}/${b.rows.length}</span></div></div>
+      <ul>${rows.map(r=>`<li><label><input type="checkbox" id="${r.id}" ${state[r.id]?"checked":""} ${readonly?"disabled":""}><span class="box">${tick}</span><span class="txt">${r.star?'<span class="st">★</span>':""}${esc(r.text)}</span></label></li>`).join("")}</ul>
+    </section>`}).join("");
+  document.getElementById("list").innerHTML=html||`<div class="empty">Everything on this list is done.</div>`;
+  document.querySelectorAll("#list input").forEach(el=>el.onchange=()=>toggle(el.id,el.checked));
+}
+function toggle(id,val){
+  state[id]=val; lsSave(); render();
+}
+function setSync(cls,txt){const el=document.getElementById("sync");el.className="sync "+cls;el.querySelector("span").textContent=txt}
+function persistView(){try{localStorage.setItem(LS+"-view",JSON.stringify({who,day}))}catch(e){};try{history.replaceState(null,"","#"+who+"-"+day)}catch(e){}}
+
+/* initial view */
+(function(){
+  const h=(location.hash||"").slice(1).split("-");
+  if(PEOPLE[h[0]])who=h[0]; if(DAYN[h[1]])day=h[1];
+  else{try{const v=JSON.parse(localStorage.getItem(LS+"-view")||"{}");if(PEOPLE[v.who])who=v.who;if(DAYN[v.day])day=v.day}catch(e){}}
+})();
+state=lsLoad();
+render();
+document.getElementById("hideDone").onclick=e=>{hideDone=!hideDone;e.currentTarget.setAttribute("aria-pressed",hideDone);render()};
+
+setSync("live","Ticks save on this phone");
+</script>
+
+</body></html>

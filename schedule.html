@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Gathering 2026 Crew Schedule</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: call-sheet header, day tabs, hour grid (time axis + one column per shooter), shot-notes panel beside it, night coverage table below. */
+:root{
+  --bg:#f2f5f4; --surface:#ffffff; --ink:#17211f; --muted:#5b6966; --line:#d6dddb; --line-soft:#e8eeec;
+  --accent:#2f5d50;
+  --stage-bg:#dbe5f2; --stage-bd:#9db3d3; --stage-ink:#1d3557;
+  --act-bg:#d6ebe1; --act-bd:#8fc3ab; --act-ink:#164533;
+  --eve-bg:#e5ddf3; --eve-bd:#b09ed5; --eve-ink:#362456;
+  --trav-bd:#b4bebb; --brk-bg:#eaeeed; --brk-bd:#d3dad8;
+  --off:#e9edec; --ot:#d4500f; --star:#a8701a;
+  --edit-bg:#f3e6cc; --edit-bd:#d4b47a; --edit-ink:#5a3f0e;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --pph:56px; --hours:24;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111715; --surface:#18201e; --ink:#e4ebe9; --muted:#97a6a2; --line:#2b3532; --line-soft:#1f2826;
+  --accent:#7fc0aa;
+  --stage-bg:#1e2c41; --stage-bd:#3d5b84; --stage-ink:#cad9ef;
+  --act-bg:#183128; --act-bd:#2f6b54; --act-ink:#c2e5d5;
+  --eve-bg:#29213f; --eve-bd:#5c4a8c; --eve-ink:#ddd2f3;
+  --trav-bd:#4a5653; --brk-bg:#1c2422; --brk-bd:#2d3835;
+  --off:#151c1a; --ot:#ff7a3d; --star:#e0b04a;
+  --edit-bg:#3a2e17; --edit-bd:#7a6230; --edit-ink:#f0dfb8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111715; --surface:#18201e; --ink:#e4ebe9; --muted:#97a6a2; --line:#2b3532; --line-soft:#1f2826;
+  --accent:#7fc0aa;
+  --stage-bg:#1e2c41; --stage-bd:#3d5b84; --stage-ink:#cad9ef;
+  --act-bg:#183128; --act-bd:#2f6b54; --act-ink:#c2e5d5;
+  --eve-bg:#29213f; --eve-bd:#5c4a8c; --eve-ink:#ddd2f3;
+  --trav-bd:#4a5653; --brk-bg:#1c2422; --brk-bd:#2d3835;
+  --off:#151c1a; --ot:#ff7a3d; --star:#e0b04a;
+  --edit-bg:#3a2e17; --edit-bd:#7a6230; --edit-ink:#f0dfb8; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1;margin:4px 0 0;letter-spacing:.005em;text-wrap:balance;text-transform:uppercase}
+.roster{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--muted)}
+.roster b{color:var(--ink);font-weight:600}
+.roster .ot{color:var(--ot);font-weight:600}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px}
+.tabs button{font:600 15px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;border:0;background:transparent;color:var(--muted);padding:9px 14px;border-radius:5px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tabs button:focus-visible,.blk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:12px;border-radius:3px;border:1px solid}
+.sw.stage{background:var(--stage-bg);border-color:var(--stage-bd)}
+.sw.act{background:var(--act-bg);border-color:var(--act-bd)}
+.sw.eve{background:var(--eve-bg);border-color:var(--eve-bd)}
+.sw.trav{background:transparent;border:1px dashed var(--trav-bd)}
+.sw.brk{background:var(--brk-bg);border-color:var(--brk-bd)}
+.sw.edit{background:var(--edit-bg);border-color:var(--edit-bd)}
+.sw.ot{background:repeating-linear-gradient(135deg,transparent 0 3px,color-mix(in srgb,var(--ot) 45%,transparent) 3px 5px);border-color:var(--ot)}
+.star{color:var(--star)}
+
+.daysub{font-family:var(--display);font-size:20px;font-weight:600;margin:0;letter-spacing:.01em}
+.daysub small{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted);margin-left:8px}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.board{min-width:0;display:flex;flex-direction:column;gap:20px}
+.scroller{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.sched{display:grid;grid-template-columns:58px repeat(5,minmax(150px,1fr));min-width:820px}
+.head.ed{background:var(--line-soft)}
+.head{padding:12px 10px 10px;border-bottom:1px solid var(--line);border-left:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.head:first-child{border-left:0}
+.head .nm{font-family:var(--display);font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;line-height:1}
+.head .rl{font-size:12.5px;color:var(--muted)}
+.head .sh{font-family:var(--mono);font-size:11.5px;color:var(--ink);display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}
+.pill{font-family:var(--mono);font-size:10.5px;font-weight:500;padding:1px 6px;border-radius:99px;border:1px solid var(--ot);color:var(--ot);white-space:nowrap}
+.axis{position:relative;height:calc(var(--pph)*var(--hours))}
+.axis div{position:absolute;right:8px;transform:translateY(-50%);font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.axis div:first-child{transform:none}
+.track{position:relative;height:calc(var(--pph)*var(--hours));border-left:1px solid var(--line);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(var(--line-soft) 1px,transparent 1px);
+  background-size:100% var(--pph),100% calc(var(--pph)/2)}
+.offshift{position:absolute;left:0;right:0;background:repeating-linear-gradient(45deg,transparent 0 7px,var(--off) 7px 9px);opacity:.9}
+.offlabel{position:absolute;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+.blk{position:absolute;left:5px;right:5px;border:1px solid;border-radius:5px;padding:3px 7px;overflow:hidden;cursor:pointer;text-align:left;font:inherit;display:flex;flex-direction:column;gap:0;line-height:1.2}
+.blk .tm{font-family:var(--mono);font-size:10.5px;opacity:.8;font-variant-numeric:tabular-nums;white-space:nowrap}
+.blk .tt{font-weight:600;font-size:13px}
+.blk .wh{font-size:11.5px;opacity:.8}
+.blk.tight{flex-direction:row;align-items:center;gap:6px;padding-block:0}
+.blk.tight .tt{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blk.tight .wh,.blk.tight .tm{display:none}
+.blk.mid .wh{display:none}
+.k-stage{background:var(--stage-bg);border-color:var(--stage-bd);color:var(--stage-ink)}
+.k-act{background:var(--act-bg);border-color:var(--act-bd);color:var(--act-ink)}
+.k-eve{background:var(--eve-bg);border-color:var(--eve-bd);color:var(--eve-ink)}
+.k-trav{background:var(--surface);border-style:dashed;border-color:var(--trav-bd);color:var(--muted)}
+.k-brk{background:var(--brk-bg);border-color:var(--brk-bd);color:var(--muted)}
+.k-edit{background:var(--edit-bg);border-color:var(--edit-bd);color:var(--edit-ink)}
+.midnight{position:absolute;left:0;right:0;border-top:2px solid var(--ink);opacity:.35;pointer-events:none}
+.blk.ot{border-color:var(--ot);border-width:1.5px;background-image:repeating-linear-gradient(135deg,transparent 0 7px,color-mix(in srgb,var(--ot) 16%,transparent) 7px 12px)}
+.blk .badge{display:inline-flex;gap:4px;align-items:center}
+.blk .pill{font-size:9.5px;padding:0 5px;background:var(--surface)}
+.blk[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:1px;z-index:2}
+
+.panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+@media (max-width:900px){.panel{position:static}}
+.panel .who{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.panel h3{font-family:var(--display);font-size:24px;font-weight:700;line-height:1.05;margin:0;text-wrap:balance}
+.panel .meta{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13.5px}
+.panel .meta dt{color:var(--muted)}
+.panel .meta dd{margin:0;font-variant-numeric:tabular-nums}
+.panel p{margin:0;font-size:14px}
+.panel .hint{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+
+.cov h2{font-family:var(--display);font-size:20px;font-weight:600;margin:0 0 8px;text-transform:uppercase;letter-spacing:.03em}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+th{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+td.t{font-family:var(--mono);font-size:12.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.flag{font-size:13.5px;color:var(--muted);margin:10px 2px 0}
+.flag b{color:var(--ot);font-weight:600}
+@media (prefers-reduced-motion:no-preference){.blk{transition:filter .12s}.blk:hover{filter:brightness(.97)}}
+</style>
+
+<style>.sitenav{display:flex;gap:16px;flex-wrap:wrap;font:500 13px/1 var(--mono, ui-monospace, Menlo, monospace);letter-spacing:.04em;text-transform:uppercase;margin:0 auto 12px;max-width:1180px}.sitenav a{color:var(--muted,#5b6966);text-decoration:none;padding:6px 0;border-bottom:2px solid transparent}.sitenav a[aria-current]{color:var(--ink,#17211f);border-color:var(--ink,#17211f)}.sitenav a:focus-visible{outline:2px solid var(--accent,#2f5d50);outline-offset:2px}</style><nav class="sitenav"><a href="index.html">Home</a><a href="schedule.html" aria-current="page">Crew schedule</a><a href="shot-lists.html">Shot lists</a></nav>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">LBLD video team · Fairmont Banff Springs · Oct 21 to 23, 2026</div>
+      <h1>The Gathering 2026 Crew Schedule</h1>
+    </div>
+    <div class="roster" id="roster"></div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="legend">
+      <span><i class="sw stage"></i>Stage sessions</span>
+      <span><i class="sw act"></i>Activations, b-roll</span>
+      <span><i class="sw eve"></i>Evening events</span>
+      <span><i class="sw trav"></i>Travel</span>
+      <span><i class="sw brk"></i>Break, prep</span>
+      <span><i class="sw edit"></i>Editing</span>
+      <span><i class="sw ot"></i>Overtime</span>
+      <span><b class="star">★</b> Must-have</span>
+    </div>
+  </div>
+
+  <h2 class="daysub" id="daysub"></h2>
+
+  <div class="main">
+    <div class="board">
+      <div class="scroller"><div class="sched" id="sched"></div></div>
+      <section class="cov">
+        <h2>Night coverage</h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Event</th><th>Official time</th><th>Covered by</th><th>On site</th></tr></thead>
+          <tbody id="cov"></tbody>
+        </table></div>
+        <p class="flag" id="flag"></p>
+      </section>
+      <section class="cov">
+        <h2>Card drops and handoffs</h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Time</th><th>From</th><th>To</th><th>What</th></tr></thead>
+          <tbody id="drops"></tbody>
+        </table></div>
+      </section>
+    </div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+</div>
+
+<script>
+const START=8, END=32;
+const PEOPLE={
+  aaron:{name:"Aaron",role:"Hotel side · Acquia + Riverview Lounge",shift:[8.5,18.5]},
+  bence:{name:"Bence",role:"WestJet Main Stage · evening backup",shift:[8.5,18.5]},
+  oliver:{name:"Oliver",role:"Linqia Stage · evening run",shift:[12,22]},
+  shane:{name:"Shane",role:"Editor · session edits",shift:[9,19],ed:true},
+  zach:{name:"Zach",role:"Editor · overnight recap",shift:[21.5,31.5],ed:true}
+};
+const OT={wed:2.5,thu:4.5,fri:5.5};
+const t=s=>{const[h,m]=s.split(":").map(Number);return h+m/60};
+const b=(s,e,title,where,kind,notes,flags="")=>({s:t(s),e:t(e),title,where,kind,notes,star:flags.includes("*"),ot:flags.includes("o")});
+/* shared editor blocks */
+const shaneDay=(which,stages)=>[
+  b("9:00","19:00",`Edit ${which} sessions`,stages,"edit",`Deliverables: one file per ${which} session, Tier 1 speakers first. Name it Day - Stage - Speaker(s) - Session title. TGF sonic intro and outro on every session. Upload to 2026 SESSIONS in the folder for the stage it ran on, and log what's left.`,"*")];
+const zachNight=(label,dayNotes,cutNotes)=>[
+  b("21:30","31:30",label,"Edit station","edit",`Deliverable: one vertical recap, uploaded to DAILY RECAP VIDEOS as ${label} by 7:30 AM. Day half: ${dayNotes} Night half: ${cutNotes} Music, colour, titles, no cropped partner logos.`,"*")];
+const RIVERVIEW_BOOTHS="#12 Radiant Health, #13 Bold Move Wall, #14 CampBrand, #15 Acquia Connection Garden, #16 Heritage Coffee & Vendo Media, D1D golf sim";
+
+const DAYS={
+wed:{label:"Wed Oct 21",sub:"Arrivals, registration, night one",
+ people:{
+  aaron:[
+   b("8:30","9:15","Empty stages","Acquia + Alhambra","stage","Both stages empty before attendees. VIP seating, signage.","*"),
+   b("9:15","12:00","Float both stages","Acquia + Alhambra","stage","Tight angles and hero clips, starred speakers first. Breaks: CULT Lounge (Strathcona Room) and CULT Speakeasy (Angus Room)."),
+   b("12:00","16:30","Acquia sessions","Acquia Stage","stage","Oliver takes Alhambra at 12:15. Sessions, hero clips, reactions. 30-min meal in a session gap. Breaks: CULT lounges on Mezzanine 2."),
+   b("16:30","17:45","Opening Party setup","Rundle Bar + Terrace","eve","Opening Party EMPTY before doors. Kuma pop-up and CULT sidecar setup, Process Colour tattoo sign-up."),
+   b("17:45","18:30","Activations full","Mt. Stephen Hall + video booth","act","Late-day activations FULL, video booth in use.")],
+  bence:[
+   b("8:30","9:00","Registration EMPTY","Mt. Stephen Hall","act","Wide with signage and sponsor logos. Mark the tripod spot for the FULL shot.","*"),
+   b("9:00","11:00","Arrivals","Entrance + lobby","act","Luggage, hugs, the flags. Range Rovers with speakers and VIPs. Linqia key cards and Gold Floor check-in for the VIP / Pinnacle reel."),
+   b("11:00","12:00","Registration FULL","Mt. Stephen Hall","act","Same marked angle at peak. Video booth lineups plus overhead. Candid intros, coffees, selfies. Pheedloop app in use.","*"),
+   b("12:00","12:30","Meal","","brk","30-min meal."),
+   b("12:30","16:15","Riverview Lounge + main floor","Hotel Hub, Mezzanine 2","act",`Riverview Lounge booths: ${RIVERVIEW_BOOTHS}. Main floor: Rundle Bar, Mt. Stephen Hall.`),
+   b("16:15","16:45","Prep for gondola","","brk","Batteries, cards, gimbal."),
+   b("16:45","17:00","Legends meet-up","Fairmont lobby","eve","VIPs heading out. Depart 5:00 PM sharp."),
+   b("17:00","18:30","Legends Dinner","Sky Bistro","eve","Gondola ride and cabin view. Summit golden hour. Table setup before seating. Branded cocktails, glassware with the view. Linqia branding in frame.","*"),
+   b("18:30","21:00","Legends Dinner: sunset, Arielle, ride down","Sky Bistro","eve","Sunset at the summit (near 6:40 PM). Poet Arielle: wide of the room watching, tight, audience reactions. Dessert, toasts. Night view on the ride down. Wednesday overtime: 2.5 hrs.","*o")],
+  oliver:[
+   b("12:00","12:15","Check in","Hotel side","brk","Check in with Aaron. Get the hero clip list."),
+   b("12:15","16:30","Alhambra sessions","Alhambra Ballroom","stage","Sessions, tight angle, hero clips, reactions. Breaks: Legends House room wide."),
+   b("16:30","17:00","Meal","","brk","30-min meal."),
+   b("17:00","17:30","Fairmont exteriors","Fairmont exterior","act","Golden light exteriors for the aftermovie. Full batteries and cards for the night."),
+   b("17:30","17:45","Travel","To Sudden Sally","trav","15 min."),
+   b("17:45","18:15","Sudden Sally Supper Club","Venue TBC","eve","Set table before guests, candles, florals. Then guests sitting, host welcome, wine pours, a toast."),
+   b("18:15","18:35","Travel","To Lux Cinema","trav","20 min."),
+   b("18:35","19:40","Disney Film Screening","Lux Cinema","eve","6:35 exterior, Disney signage, arrivals. 7:00 speakers introducing the evening, wide and tight. 7:15 full theatre, popcorn, blankets, faces lit, reactions.","*"),
+   b("19:40","19:55","Travel","To the Fairmont","trav","15 min."),
+   b("19:55","22:00","Opening Party","Rundle Bar + Terrace","eve","7:55 arrival energy, signage lit, cocktails and food. 8:15 Terrace: Kuma gear, CULT sidecar, tattoo sign-up. 8:45 networking, photobooths. 9:15 dance floor: DJ, DJ drop, slow crowd pan. 9:45 last clips, wrap at 10.","*")],
+  shane:[],
+  zach:zachNight("WED OCT 21 RECAP",
+   "registration empty-vs-full, arrivals and Range Rovers, stage hero clips, Riverview Lounge booths, Legends Dinner gondola and summit.",
+   "Lux screening, supper club, Opening Party. Close on the DJ drop, cheers and the slow crowd pan.")
+ },
+ drops:[
+  ["6:30 PM","Aaron","Edit station","Acquia + Alhambra b-roll, CULT lounges, Opening Party setup"],
+  ["9:00 PM","Bence","Edit station","Registration, arrivals, Riverview Lounge, Legends Dinner"],
+  ["9:30 PM","Zach","Starts","Overnight recap begins"],
+  ["10:00 PM","Oliver","Edit station","Alhambra, Sudden Sally, Lux, Opening Party"],
+  ["7:30 AM Thu","Zach","Recap folder","WED OCT 21 RECAP uploaded"]],
+ cov:[
+  ["Legends Dinner @ Sky Bistro","Depart 5:00 PM","Bence","4:45 to 9:00 PM (OT from 6:30)"],
+  ["Sudden Sally Supper Club","6:00 to 8:00 PM","Oliver","5:45 to 6:15 PM"],
+  ["Disney Film Screening @ Lux","7:00 to 8:30 PM","Oliver","6:35 to 7:40 PM"],
+  ["Opening Party @ Rundle Bar","8:00 PM to late","Oliver (Aaron did setup)","7:55 to 10:00 PM"]],
+ flag:"<b>Not covered:</b> Opening Party after 10 PM."},
+thu:{label:"Thu Oct 22",sub:"Three stages, six night events",
+ people:{
+  aaron:[
+   b("8:30","9:30","Riverview Lounge setups","Hotel Hub, Mezzanine 2","act",`Booths before guests: ${RIVERVIEW_BOOTHS}. CULT Lounge too. Bence has the Acquia pre-doors.`),
+   b("9:30","12:00","Acquia sessions","Acquia Stage","stage","Sessions, hero clips, reactions. Breaks: Riverview Lounge, right beside the stage."),
+   b("12:00","13:00","Lunches","Mt. Stephen Hall + Alhambra","act","All Access Lunch: grab-and-go, signage, socializing. VIP, Pinnacle & Speaker Lunch in Alhambra: buffet, signage, toasts."),
+   b("13:00","17:00","Acquia sessions + hotel side","Acquia Stage","stage","30-min meal in a session gap. Breaks: Riverview Lounge booths, CULT Lounge (Strathcona), CULT Speakeasy (Angus Room), Rundle Bar."),
+   b("17:00","17:30","Creator Party buildout","Fairmont Terrace","eve","Before guests. Disney branding with the mountain backdrop."),
+   b("17:30","18:30","Creator Party","Fairmont Terrace","eve","Terrace wide with branding, golden light before sunset (near 6:40 PM), decor, drinks and food.","*")],
+  bence:[
+   b("8:30","9:15","Pre-doors: Acquia","Acquia Stage, hotel side","stage","Acquia Stage empty and VIP seating before attendees.","*"),
+   b("9:15","9:30","Walk","To the Conference Centre","trav","15 min."),
+   b("9:30","10:00","Welcome video","WestJet Main Stage","stage","Tail of the welcome video as the screen cuts to WELCOME TO THE GATHERING. Opening walk-on.","*"),
+   b("10:00","12:00","Float stages + Inner Sanctums","WestJet, Linqia, CULT Inner Sanctums","stage","WestJet first. VIP seating FULL and airplane snacks. CULT Inner Sanctums #1 and #2 (3rd floor): candids, Q&A. Behind the Screen Lounge empty and full. Booths #6 to #11 before Oliver arrives."),
+   b("12:00","13:00","Van Horne foyer + meal","Conference Centre","act","Lunch peak at booths #1 to #5: Air Labs, Process Colour Flash Tattoos, Village Brewery, OnLocation. Win Wall, Photo Op, WestJet Guest Services. 30-min meal."),
+   b("13:00","17:00","WestJet sessions","WestJet Main Stage","stage","Oliver has Linqia. Hero clips, panel L/R, speaker POV, walk-ons. Breaks: Krump Room (WestJet), Process Colour tattoos, booths #1 to #5."),
+   b("17:00","17:45","Activations full","Conference Centre","act","Last session or activations FULL."),
+   b("17:45","18:00","Travel","To Good Folk","trav","15 min."),
+   b("18:00","18:30","Good Folk Supper Club","Venue TBC","eve","Set table before 6:30 guests, candlelight, florals."),
+   b("18:30","19:30","Good Folk: dinner","Venue TBC","eve","Guests arriving, plates, sharing, host speech, toasts.","o"),
+   b("19:30","19:50","Travel","To Dusty Boot","trav","20 min.","o"),
+   b("19:50","23:00","Fuck Up Nights","Dusty Boot Saloon","eve","7:50 saloon details before it fills: signage, bar, neon, cowboy touches. 8:30 every speaker mid-story, wide and tight. Crowd laughing, cheering, cringing. Stay to close. Thursday overtime: 4.5 hrs.","*o")],
+  oliver:[
+   b("12:00","12:15","Check in","Conference Centre","brk","Check in with Bence. Get the hero clip list."),
+   b("12:15","16:45","Linqia sessions","Linqia Stage, Beatty Coleman Room","stage","Sessions, hero clips, every panelist covered. Breaks: booths #6 to #11 beside the stage (The Way, TGF Guest Services, Candidly, Routine Natural Beauty, Podcast Booth, Blee), ICA / Eclipse Coffee Lounge, Hall of Fame wall."),
+   b("16:45","17:15","Meal","","brk","Meal. Full batteries and cards for the night."),
+   b("17:15","18:20","Creator Party","Fairmont Terrace","eve","Second angle with Aaron. Aaron holds wides, branding and light. You take creators with phones out, activations, posing.","*"),
+   b("18:20","18:35","Travel","To BSSP Igloo","trav","15 min."),
+   b("18:35","19:05","BSSP Igloo exterior","Location TBC","eve","Exterior only. Glowing igloo at blue hour (6:45 to 7:10). Wide, mid, details, one slow push. One doorway clip if allowed. Enough for a 15 to 30 second reel."),
+   b("19:05","19:20","Travel","To Grapes, Mezzanine 2","trav","15 min."),
+   b("19:20","20:15","Disney Salon Dinner","Grapes Wine Bar, Mezzanine 2","eve","7:20 buildout before guests. 7:30 full table, Disney welcome remarks, eating, toasts."),
+   b("20:15","20:30","Travel","To Melissa's Missteak","trav","15 min."),
+   b("20:30","22:00","Jamboree","Melissa's Missteak","eve","8:30 exterior signage, guests heading in. 8:45 live music wide and tight. 9:15 dancing, singing along. 9:45 crowd pan, last clips, wrap at 10.","*")],
+  shane:shaneDay("Wed","Acquia + Alhambra"),
+  zach:zachNight("THU OCT 22 RECAP",
+   "WELCOME TO THE GATHERING screen moment, hero speakers from all three stages, VIP seating and airplane snacks, Conference Centre booths, Creator Party.",
+   "Igloo at blue hour, Fuck Up Nights reactions, Jamboree live music and singalong.")
+ },
+ drops:[
+  ["9:00 AM","Zach's SSD","Shane","Wed sessions SSD pickup"],
+  ["5:45 PM","Bence","Edit station","WestJet + Linqia b-roll, Inner Sanctums, Conference Centre booths"],
+  ["6:30 PM","Aaron","Edit station","Acquia b-roll, Riverview Lounge, Creator Party"],
+  ["6:30 PM","Shane","2026 SESSIONS","Wed session edits uploaded, what's left logged"],
+  ["9:30 PM","Zach","Starts","Overnight recap begins"],
+  ["10:00 PM","Oliver","Edit station","Linqia, Creator Party, Igloo, Disney Salon, Jamboree"],
+  ["11:00 PM","Bence","Edit station","Good Folk, Fuck Up Nights"],
+  ["7:30 AM Fri","Zach","Recap folder","THU OCT 22 RECAP uploaded"]],
+ cov:[
+  ["Creator Party (Disney) @ Terrace","5:30 to 7:30 PM","Aaron + Oliver","Aaron 5:00 to 6:30, Oliver 5:15 to 6:20"],
+  ["Good Folk Supper Club","6:30 to 8:30 PM","Bence","6:00 to 7:30 PM (OT from 6:30)"],
+  ["BSSP Igloo Private Dinner","6:30 to 8:30 PM","Oliver","6:35 to 7:05 PM"],
+  ["Disney Salon Dinner @ Grapes","7:30 to 9:00 PM","Oliver","7:20 to 8:15 PM"],
+  ["Fuck Up Nights @ Dusty Boot","8:30 to 11:00 PM","Bence","7:50 to 11:00 PM (OT)"],
+  ["Jamboree @ Melissa's Missteak","8:30 PM to 12:00 AM","Oliver","8:30 to 10:00 PM"]],
+ flag:"<b>Not covered:</b> Morning Movement, 7 to 8 AM. Jamboree after 10 PM."},
+fri:{label:"Fri Oct 23",sub:"Last sessions and the gala",
+ people:{
+  aaron:[
+   b("8:30","9:30","Riverview Lounge setups","Hotel Hub, Mezzanine 2","act","Booths #12 to #16 and D1D before guests. CULT Lounge too. Bence shot the Acquia empties on Thursday."),
+   b("9:30","12:00","Acquia sessions","Acquia Stage","stage","Sessions, hero clips, reactions. Breaks: Riverview Lounge."),
+   b("12:00","13:00","Lunches + activations","Mt. Stephen Hall + Alhambra","act","Friday lunches, 20 minutes each. Then the Riverview Lounge."),
+   b("13:00","16:30","Acquia sessions","Acquia Stage","stage","Sessions. 30-min meal in a session gap."),
+   b("16:30","17:30","Partner sweep","Hotel side","act","Fill any priority partner still missing a clean, logo-readable clip."),
+   b("17:30","18:30","Red carpet + Cocktail Hour","Mainstage foyer","eve","Red carpet arrivals, outfits, groups. ICA / Effies branding.")],
+  bence:[
+   b("8:30","9:15","Pre-doors: WestJet + Linqia","WestJet + Linqia","stage","Both stages empty, VIP seating first with the WestJet airplane snacks set out. Conference Centre booths #1 to #11 before guests.","*"),
+   b("9:15","12:15","Float stages + Inner Sanctums","WestJet, Linqia, CULT Inner Sanctums","stage","Starred speakers first. CULT Inner Sanctums (3rd floor). Booths #6 to #11 before Oliver arrives."),
+   b("12:15","13:00","Van Horne foyer + meal","Conference Centre","act","Lunch peak at booths #1 to #5, Win Wall, Photo Op. 30-min meal."),
+   b("13:00","16:30","WestJet sessions","WestJet Main Stage","stage","Last sessions: hero clips, reactions, stage environment."),
+   b("16:30","17:30","Gala room EMPTY","Mainstage (Van Horne)","eve","Full dining setup before doors. Wide, table details, stage screens. Timing depends on the room flip.","*"),
+   b("17:30","18:30","Cocktail Hour","Mainstage foyer","eve","Branded bar, drinks, cheers, small groups, connection cards."),
+   b("18:30","19:00","Cocktail Hour: room filling","Mainstage foyer","eve","6:45 room filling. Move to the stage side.","o"),
+   b("19:00","22:00","Gala, stage side","Mainstage (Van Horne)","eve","Each BHoF brand (Home Depot, ESPN / Amex, Disney, Budweiser, Chick-fil-A): hero clip on stage with the logo on screen, and trophy hand-off close-up. One Club presentation with Apple on screen. Presenters. Oliver has the room.","*o"),
+   b("22:00","24:00","After Party","Location TBC","eve","You're the only shooter here. DJ wide and tight, dancing, brand activations, candids and groups. 11:00 peak: crowd pan, DJ drop. Friday overtime: 5.5 hrs.","o")],
+  oliver:[
+   b("12:00","12:15","Check in","Conference Centre","brk","Check in with Bence."),
+   b("12:15","16:15","Linqia sessions","Linqia Stage, Beatty Coleman Room","stage","Last sessions, hero clips, every panelist covered. Breaks: booths #6 to #11, ICA / Eclipse Coffee Lounge, Hall of Fame wall."),
+   b("16:15","16:45","Meal","","brk","30-min meal."),
+   b("16:45","17:30","Prep + scout","Mainstage","brk","Full batteries and cards. Scout the trophy hand-off spot with AV. Get the award order from Sam."),
+   b("17:30","18:30","Backstage + trophies","Mainstage","eve","Trophy details on the table, presenters prepping, run-of-show check with Sam. Bence and Aaron have the cocktail floor."),
+   b("18:30","19:00","Lock room position","Mainstage","eve","Room filling, wide from the back."),
+   b("19:00","22:00","Gala, room side","Mainstage (Van Horne)","eve","Room FULL wide from the back at peak. Past inductees on screen. Applause, standing ovations, tables celebrating. Dinner, ICA / Effies branding between awards. Wrap at 10.","*")],
+  shane:shaneDay("Thu","WestJet, Linqia, Acquia, Inner Sanctums"),
+  zach:zachNight("FRI OCT 23 RECAP",
+   "last sessions, partner sweep, gala room empty, red carpet, Cocktail Hour.",
+   "the gala is the spine. Each brand on stage, trophy hand-offs, Apple on screen, standing ovations, then the After Party.")
+ },
+ drops:[
+  ["9:00 AM","Zach's SSD","Shane","Thu sessions SSD pickup"],
+  ["6:30 PM","Aaron","Edit station","Acquia b-roll, hotel side, plus Bence's day cards"],
+  ["6:30 PM","Shane","2026 SESSIONS","Thu session edits uploaded, what's left logged"],
+  ["9:30 PM","Zach","Starts","Overnight recap begins"],
+  ["10:00 PM","Oliver + Bence","Edit station","Gala room side and stage side (Bence swaps cards before the After Party)"],
+  ["12:00 AM","Bence","Edit station","After Party"],
+  ["7:30 AM Sat","Zach","Recap folder","FRI OCT 23 RECAP uploaded"]],
+ cov:[
+  ["Cocktail Hour","5:30 to 7:00 PM","Aaron + Bence (Oliver backstage)","5:30 to 7:00 PM (Aaron to 6:30)"],
+  ["Effies // Brand Hall of Fame Gala","7:00 to 10:00 PM","Bence (stage, OT) + Oliver (room)","7:00 to 10:00 PM"],
+  ["After Party","10:00 PM to late","Bence alone (OT)","10:00 PM to 12:00 AM"]],
+ flag:"<b>Not covered:</b> Meditation, 7 to 8 AM. <b>One shooter:</b> After Party (Bence)."},
+sat:{label:"Sat Oct 24",sub:"Session editing, shooters off",
+ people:{aaron:[],bence:[],oliver:[],shane:shaneDay("Fri","WestJet, Linqia, Acquia"),zach:[]},
+ drops:[
+  ["9:00 AM","Zach's SSD","Shane","Fri sessions SSD pickup"],
+  ["6:30 PM","Shane","2026 SESSIONS","Fri session edits uploaded, what's left logged for after the event"]],
+ cov:[],flag:""}
+};
+
+function fmt(x,ap=true){let h=Math.floor(x+1e-6),m=Math.round((x-h)*60);if(m===60){h++;m=0}
+  const pm=h>=12&&h<24;let hh=h%12;if(hh===0)hh=12;return hh+(m?":"+String(m).padStart(2,"0"):"")+(ap?(pm?" PM":" AM"):"")}
+function range(s,e){const same=((s>=12&&s<24)===(e>=12&&e<24));return same?fmt(s,false)+"–"+fmt(e):fmt(s)+"–"+fmt(e)}
+const dur=(s,e)=>{const m=Math.round((e-s)*60);return m<60?m+" min":(m%60?Math.floor(m/60)+" h "+m%60+" min":m/60+" h")};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const KIND={stage:"k-stage",act:"k-act",eve:"k-eve",trav:"k-trav",brk:"k-brk"};
+const KNAME={stage:"Stage sessions",act:"Activations, b-roll",eve:"Evening event",trav:"Travel",brk:"Break, prep",edit:"Editing"};
+KIND.edit="k-edit";
+
+document.getElementById("roster").innerHTML=
+  `<span><b>Aaron</b> 30 h</span><span><b>Bence</b> 30 h <span class="ot">+ 12.5 h OT</span></span><span><b>Oliver</b> 30 h</span><span><b>Shane</b> 30 h, Thu to Sat</span><span><b>Zach</b> 30 h, Wed to Fri nights</span>`;
+
+let current="wed", selected=null;
+const tabs=document.getElementById("tabs");
+Object.entries(DAYS).forEach(([k,d])=>{const bt=document.createElement("button");bt.role="tab";bt.id="tab-"+k;bt.textContent=d.label;bt.onclick=()=>show(k,true);tabs.appendChild(bt)});
+
+function show(k,push){
+  current=k;const d=DAYS[k];
+  tabs.querySelectorAll("button").forEach(bt=>bt.setAttribute("aria-selected",bt.id==="tab-"+k));
+  document.getElementById("daysub").innerHTML=esc(d.label)+"<small>"+esc(d.sub)+"</small>";
+  const sc=document.getElementById("sched");let html=`<div class="head"></div>`;
+  for(const[p,m] of Object.entries(PEOPLE)){
+    const ot=(p==="bence"&&OT[k])?`<span class="pill">+${OT[k]} h OT</span>`:"";
+    html+=`<div class="head${m.ed?" ed":""}"><span class="nm">${m.name}</span><span class="rl">${esc(m.role)}</span><span class="sh">${fmt(m.shift[0])}–${fmt(m.shift[1])} · 10 h ${ot}</span></div>`;
+  }
+  let ax=`<div class="axis">`;for(let h=START;h<=END;h++){ax+=`<div style="top:calc(var(--pph)*${h-START})">${fmt(h).replace(":00","")}</div>`}
+  html+=ax+`</div>`;
+  for(const[p,m] of Object.entries(PEOPLE)){
+    let tr=`<div class="track"><div class="midnight" style="top:calc(var(--pph)*${24-START})"></div>`;
+    const blocks=d.people[p]||[];
+    if(!blocks.length){html+=tr+`<div class="offshift" style="top:0;height:100%"></div><div class="offlabel" style="top:calc(var(--pph)*3)">Off today</div></div>`;continue}
+    const last=Math.max(...blocks.map(x=>x.e));
+    if(m.shift[0]>START){const hgt=m.shift[0]-START;tr+=`<div class="offshift" style="top:0;height:calc(var(--pph)*${hgt})"></div><div class="offlabel" style="top:calc(var(--pph)*${hgt/2} - 8px)">Call at ${fmt(m.shift[0])}</div>`}
+    if(last<END){const top=last-START,hgt=END-last;tr+=`<div class="offshift" style="top:calc(var(--pph)*${top});height:calc(var(--pph)*${hgt})"></div><div class="offlabel" style="top:calc(var(--pph)*${top+hgt/2} - 8px)">Wrap ${fmt(last)}</div>`}
+    blocks.forEach((x,i)=>{
+      const len=x.e-x.s, cls=len<=0.34?"tight":(len<=0.6?"mid":"");
+      const badges=(x.star?`<b class="star">★</b>`:"")+(x.ot?`<span class="pill">OT</span>`:"");
+      tr+=`<button class="blk ${KIND[x.kind]} ${cls} ${x.ot?"ot":""}" data-p="${p}" data-i="${i}" aria-pressed="false"
+        style="top:calc(var(--pph)*${x.s-START} + 1px);height:calc(var(--pph)*${len} - 2px)"
+        title="${esc(range(x.s,x.e)+" · "+x.title)}">
+        ${cls==="tight"?`<span class="tt">${badges} ${esc(x.title)}</span>`:
+        `<span class="tm">${range(x.s,x.e)}</span><span class="tt"><span class="badge">${badges}</span> ${esc(x.title)}</span>${x.where?`<span class="wh">${esc(x.where)}</span>`:""}`}
+      </button>`;
+    });
+    html+=tr+`</div>`;
+  }
+  sc.innerHTML=html;
+  sc.querySelectorAll(".blk").forEach(el=>el.onclick=()=>select(el.dataset.p,+el.dataset.i));
+  document.getElementById("drops").innerHTML=(d.drops||[]).map(r=>`<tr><td class="t">${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join("");
+  document.getElementById("cov").innerHTML=d.cov.length?"":`<tr><td colspan="4">No evening events today.</td></tr>`;
+  if(d.cov.length)document.getElementById("cov").innerHTML=d.cov.map(r=>`<tr><td>${esc(r[0])}</td><td class="t">${esc(r[1])}</td><td>${esc(r[2])}</td><td class="t">${esc(r[3])}</td></tr>`).join("");
+  const fl=document.getElementById("flag");fl.innerHTML=d.flag;fl.hidden=!d.flag;
+  // default selection: first must-have evening block for Oliver
+  const oi=d.people.oliver.findIndex(x=>x.kind==="eve"&&x.star);
+  if(oi>=0)select("oliver",oi);
+  else{const fp=Object.keys(PEOPLE).find(q=>(d.people[q]||[]).length);if(fp)select(fp,0)}
+  if(push){try{history.replaceState(null,"","#"+k)}catch(e){}}
+  try{localStorage.setItem("gathering-day",k)}catch(e){}
+}
+function select(p,i){
+  const x=DAYS[current].people[p][i];selected=[p,i];
+  document.querySelectorAll(".blk").forEach(el=>el.setAttribute("aria-pressed",el.dataset.p===p&&+el.dataset.i===i));
+  document.getElementById("panel").innerHTML=`
+    <div class="who">${PEOPLE[p].name} · ${esc(DAYS[current].label)}</div>
+    <h3>${x.star?'<span class="star">★</span> ':""}${esc(x.title)}</h3>
+    <dl class="meta">
+      <dt>Time</dt><dd>${range(x.s,x.e)} (${dur(x.s,x.e)})</dd>
+      ${x.where?`<dt>Where</dt><dd>${esc(x.where)}</dd>`:""}
+      <dt>Type</dt><dd>${KNAME[x.kind]}${x.ot?' · <span class="pill">Overtime</span>':""}</dd>
+    </dl>
+    <p>${esc(x.notes)}</p>
+    <p class="hint">Tap any block to see its shot notes. Full detail lives in the capture plan doc.</p>`;
+}
+let start=(location.hash||"").replace("#","");
+if(!DAYS[start]){try{start=localStorage.getItem("gathering-day")||"wed"}catch(e){start="wed"}}
+if(!DAYS[start])start="wed";
+show(start,false);
+</script>
+
+</body></html>
