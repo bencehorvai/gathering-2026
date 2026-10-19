@@ -116,7 +116,7 @@ input:checked~.txt{color:var(--done);text-decoration:line-through;text-decoratio
 <script>
 const PEOPLE={
   aaron:{name:"Aaron",role:"Hotel side · Acquia"},
-  bence:{name:"Bence",role:"WestJet · backup nights"},
+  bence:{name:"Bence",role:"WestJet · gala Fri"},
   oliver:{name:"Oliver",role:"Linqia · evening run"},
   shane:{name:"Shane",role:"Editor · sessions",ed:true},
   zach:{name:"Zach",role:"Editor · overnight recap",ed:true}
@@ -269,14 +269,8 @@ bence:{
    "Summit b-roll with the Banff backdrop, golden hour",
    "Dining setup before guests: table, place settings, candles, conversation cards",
    "Luxury b-roll: plates, branded cocktails, cheers, glassware with the view",
-   "*Linqia branding clearly in frame (sponsor)"]),
-  s("6:30 to 9:00 PM","Legends Dinner, overtime","Sky Bistro","eve",[
-   "Sunset at the summit (near 6:40 PM)",
-   "*Poet Arielle: wide of the room watching",
-   "*Poet Arielle: tight",
-   "Audience reactions to Arielle",
-   "Conversation cards in use, connections being made",
-   "Night view on the ride down"],true)],
+   "*Linqia branding clearly in frame (sponsor)",
+   "Guests arriving, first toasts before you wrap at 6:30"])],
  thu:[
   s("8:30 to 9:15 AM","Pre-doors: hotel side","Acquia Stage","stage",[
    "*Acquia Stage EMPTY, wide from the back, logos readable",
@@ -298,18 +292,10 @@ bence:{
   CONF_FRONT("Breaks all day"),
   CONF_LINQIA("Before 12:15, until Oliver arrives"),
   CONF_TBC("Breaks all day"),
-  s("6:00 to 7:30 PM (overtime from 6:30)","Good Folk Supper Club","Venue TBC","eve",[
+  s("6:00 to 6:30 PM","Good Folk Supper Club (setup)","Venue TBC","eve",[
    "Venue wide, set table before guests",
-   "Same angle FULL at peak",
    "Candlelight, decor, florals",
-   "Plates arriving, sharing, pouring wine, toasts",
-   "Host welcome / speeches"],true),
-  s("7:50 to 11:00 PM","Fuck Up Nights","Dusty Boot Saloon","eve",[
-   "Exterior signage, guests heading in",
-   "Saloon atmosphere: signage, bar, neon, cowboy details",
-   "*Speakers on the mic mid-story, big expressions",
-   "*Crowd reactions: laughing, cheering, cringing",
-   "Every speaker covered, wide and tight"],true)],
+   "First guests arriving, if early"])],
  fri:[
   s("8:30 to 9:15 AM","Pre-doors: conference side","WestJet + Linqia","stage",[
    "*WestJet Main Stage EMPTY, wide from the back",
@@ -344,13 +330,7 @@ bence:{
    "*Chick-fil-A on stage accepting, logo on screen",
    "*Trophy hand-off close-up for every award",
    "*One Club presentation with APPLE on screen",
-   "Presenters at the mic"],true),
-  s("10:00 PM to 12:00 AM","After Party (only shooter)","Location TBC","eve",[
-   "*DJ wide and tight",
-   "Dancing, last-night energy",
-   "Brand activations in use",
-   "Candids and groups",
-   "*Reel clips: DJ drop, crowd pan"],true)]
+   "Presenters at the mic"],true)]
 },
 oliver:{
  wed:[
@@ -398,12 +378,16 @@ oliver:{
    "Full table",
    "Disney welcome remarks",
    "People eating, toasts"]),
-  s("8:30 to 10:00 PM","Jamboree","Melissa's Missteak","eve",[
+  s("8:30 to 9:15 PM","Fuck Up Nights","Dusty Boot Saloon","eve",[
+   "Saloon atmosphere: signage, bar, neon, cowboy details",
+   "*Speakers on the mic mid-story, big expressions",
+   "*Crowd reactions: laughing, cheering, cringing",
+   "At least two speakers, wide and tight"]),
+  s("9:25 to 10:00 PM","Jamboree","Melissa's Missteak","eve",[
    "Exterior signage, guests heading in",
-   "Sponsorship moments",
    "*Live music: performers wide",
    "*Live music: performers tight",
-   "Dancing, laughter, groups singing along",
+   "Dancing, groups singing along",
    "Peak crowd pan before you wrap at 10"])],
  fri:[
   s("12:15 to 4:15 PM","Linqia sessions","Linqia Stage, Beatty Coleman Room","stage",STAGE),
@@ -456,13 +440,13 @@ SHOTS.zach={
  thu:zachNight("THU OCT 22 RECAP",
   ["Bence's 5:45 PM drop offloaded (WestJet + Linqia)","Aaron's 6:30 PM drop offloaded (Acquia, hotel side, Creator Party)"],
   ["WELCOME TO THE GATHERING screen moment","Hero speakers from all three stages","VIP seating and WestJet airplane snacks","Lunches and activations","Creator Party with Disney branding"],
-  ["Bence's 11 PM drop offloaded (Good Folk, Fuck Up Nights)","Oliver's 10 PM drop offloaded (Igloo, Disney Salon, Jamboree)"],
+  ["Oliver's 10 PM drop offloaded (Igloo, Disney Salon, Fuck Up Nights, Jamboree)"],
   ["Igloo glowing at blue hour","Fuck Up Nights crowd reactions","Jamboree live music and singalong"]),
  fri:zachNight("FRI OCT 23 RECAP",
   ["Aaron's 6:30 PM drop offloaded (Acquia, plus Bence's day cards)","Bence's 10 PM gala stage cards offloaded"],
   ["Last sessions and partner sweep","Gala room empty","Red carpet and Cocktail Hour"],
-  ["Bence and Oliver's 10 PM drop offloaded (gala room side, After Party)"],
-  ["*Each BHoF brand on stage, logo on screen","*Trophy hand-offs","*One Club presentation with Apple on screen","Standing ovations, tables celebrating","After Party energy"])};
+  ["Bence and Oliver's 10 PM drop offloaded (gala)"],
+  ["*Each BHoF brand on stage, logo on screen","*Trophy hand-offs","*One Club presentation with Apple on screen","Standing ovations, tables celebrating"])};
 
 /* Build ids + add end-of-day card for shooters */
 for(const p in SHOTS)for(const d in SHOTS[p]){

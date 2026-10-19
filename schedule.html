@@ -192,12 +192,12 @@ td.t{font-family:var(--mono);font-size:12.5px;white-space:nowrap;font-variant-nu
 const START=8, END=32;
 const PEOPLE={
   aaron:{name:"Aaron",role:"Hotel side · Acquia + Riverview Lounge",shift:[8.5,18.5]},
-  bence:{name:"Bence",role:"WestJet Main Stage · evening backup",shift:[8.5,18.5]},
+  bence:{name:"Bence",role:"WestJet Main Stage · gala Fri",shift:[8.5,18.5]},
   oliver:{name:"Oliver",role:"Linqia Stage · evening run",shift:[12,22]},
   shane:{name:"Shane",role:"Editor · session edits",shift:[9,19],ed:true},
   zach:{name:"Zach",role:"Editor · overnight recap",shift:[21.5,31.5],ed:true}
 };
-const OT={wed:2.5,thu:4.5,fri:5.5};
+const OT={wed:0,thu:0,fri:3.5};
 const t=s=>{const[h,m]=s.split(":").map(Number);return h+m/60};
 const b=(s,e,title,where,kind,notes,flags="")=>({s:t(s),e:t(e),title,where,kind,notes,star:flags.includes("*"),ot:flags.includes("o")});
 /* shared editor blocks */
@@ -224,8 +224,7 @@ wed:{label:"Wed Oct 21",sub:"Arrivals, registration, night one",
    b("12:30","16:15","Riverview Lounge + main floor","Hotel Hub, Mezzanine 2","act",`Riverview Lounge booths: ${RIVERVIEW_BOOTHS}. Main floor: Rundle Bar, Mt. Stephen Hall.`),
    b("16:15","16:45","Prep for gondola","","brk","Batteries, cards, gimbal."),
    b("16:45","17:00","Legends meet-up","Fairmont lobby","eve","VIPs heading out. Depart 5:00 PM sharp."),
-   b("17:00","18:30","Legends Dinner","Sky Bistro","eve","Gondola ride and cabin view. Summit golden hour. Table setup before seating. Branded cocktails, glassware with the view. Linqia branding in frame.","*"),
-   b("18:30","21:00","Legends Dinner: sunset, Arielle, ride down","Sky Bistro","eve","Sunset at the summit (near 6:40 PM). Poet Arielle: wide of the room watching, tight, audience reactions. Dessert, toasts. Night view on the ride down. Wednesday overtime: 2.5 hrs.","*o")],
+   b("17:00","18:30","Legends Dinner","Sky Bistro","eve","Gondola ride and cabin view. Summit golden hour. Table setup before seating. Guests arriving, branded cocktails, glassware with the view. Linqia branding in frame. Wrap at 6:30.","*")],
   oliver:[
    b("12:00","12:15","Check in","Hotel side","brk","Check in with Aaron. Get the hero clip list."),
    b("12:15","16:30","Alhambra sessions","Alhambra Ballroom","stage","Sessions, tight angle, hero clips, reactions. Breaks: Legends House room wide."),
@@ -244,16 +243,16 @@ wed:{label:"Wed Oct 21",sub:"Arrivals, registration, night one",
  },
  drops:[
   ["6:30 PM","Aaron","Edit station","Acquia + Alhambra b-roll, CULT lounges, Opening Party setup"],
-  ["9:00 PM","Bence","Edit station","Registration, arrivals, Riverview Lounge, Legends Dinner"],
+  ["7:00 PM","Bence","Edit station","Registration, arrivals, Riverview Lounge, Legends Dinner"],
   ["9:30 PM","Zach","Starts","Overnight recap begins"],
   ["10:00 PM","Oliver","Edit station","Alhambra, Sudden Sally, Lux, Opening Party"],
   ["7:30 AM Thu","Zach","Recap folder","WED OCT 21 RECAP uploaded"]],
  cov:[
-  ["Legends Dinner @ Sky Bistro","Depart 5:00 PM","Bence","4:45 to 9:00 PM (OT from 6:30)"],
+  ["Legends Dinner @ Sky Bistro","Depart 5:00 PM","Bence","4:45 to 6:30 PM"],
   ["Sudden Sally Supper Club","6:00 to 8:00 PM","Oliver","5:45 to 6:15 PM"],
   ["Disney Film Screening @ Lux","7:00 to 8:30 PM","Oliver","6:35 to 7:40 PM"],
   ["Opening Party @ Rundle Bar","8:00 PM to late","Oliver (Aaron did setup)","7:55 to 10:00 PM"]],
- flag:"<b>Not covered:</b> Opening Party after 10 PM."},
+ flag:"<b>Not covered:</b> Legends Dinner after 6:30 PM (sunset, poet Arielle). Opening Party after 10 PM."},
 thu:{label:"Thu Oct 22",sub:"Three stages, six night events",
  people:{
   aaron:[
@@ -272,10 +271,7 @@ thu:{label:"Thu Oct 22",sub:"Three stages, six night events",
    b("13:00","17:00","WestJet sessions","WestJet Main Stage","stage","Oliver has Linqia. Hero clips, panel L/R, speaker POV, walk-ons. Breaks: Krump Room (WestJet), Process Colour tattoos, booths #1 to #5."),
    b("17:00","17:45","Activations full","Conference Centre","act","Last session or activations FULL."),
    b("17:45","18:00","Travel","To Good Folk","trav","15 min."),
-   b("18:00","18:30","Good Folk Supper Club","Venue TBC","eve","Set table before 6:30 guests, candlelight, florals."),
-   b("18:30","19:30","Good Folk: dinner","Venue TBC","eve","Guests arriving, plates, sharing, host speech, toasts.","o"),
-   b("19:30","19:50","Travel","To Dusty Boot","trav","20 min.","o"),
-   b("19:50","23:00","Fuck Up Nights","Dusty Boot Saloon","eve","7:50 saloon details before it fills: signage, bar, neon, cowboy touches. 8:30 every speaker mid-story, wide and tight. Crowd laughing, cheering, cringing. Stay to close. Thursday overtime: 4.5 hrs.","*o")],
+   b("18:00","18:30","Good Folk Supper Club (setup)","Venue TBC","eve","Set table before 6:30 guests, candlelight, florals. First guests arriving if they're early. Wrap at 6:30.")],
   oliver:[
    b("12:00","12:15","Check in","Conference Centre","brk","Check in with Bence. Get the hero clip list."),
    b("12:15","16:45","Linqia sessions","Linqia Stage, Beatty Coleman Room","stage","Sessions, hero clips, every panelist covered. Breaks: booths #6 to #11 beside the stage (The Way, TGF Guest Services, Candidly, Routine Natural Beauty, Podcast Booth, Blee), ICA / Eclipse Coffee Lounge, Hall of Fame wall."),
@@ -285,8 +281,10 @@ thu:{label:"Thu Oct 22",sub:"Three stages, six night events",
    b("18:35","19:05","BSSP Igloo exterior","Location TBC","eve","Exterior only. Glowing igloo at blue hour (6:45 to 7:10). Wide, mid, details, one slow push. One doorway clip if allowed. Enough for a 15 to 30 second reel."),
    b("19:05","19:20","Travel","To Grapes, Mezzanine 2","trav","15 min."),
    b("19:20","20:15","Disney Salon Dinner","Grapes Wine Bar, Mezzanine 2","eve","7:20 buildout before guests. 7:30 full table, Disney welcome remarks, eating, toasts."),
-   b("20:15","20:30","Travel","To Melissa's Missteak","trav","15 min."),
-   b("20:30","22:00","Jamboree","Melissa's Missteak","eve","8:30 exterior signage, guests heading in. 8:45 live music wide and tight. 9:15 dancing, singing along. 9:45 crowd pan, last clips, wrap at 10.","*")],
+   b("20:15","20:30","Travel","To Dusty Boot Saloon","trav","15 min."),
+   b("20:30","21:15","Fuck Up Nights","Dusty Boot Saloon","eve","Saloon details: signage, bar, neon. Speakers mid-story, wide and tight. Crowd laughing, cheering, cringing. Get at least two speakers.","*"),
+   b("21:15","21:25","Travel","To Melissa's Missteak","trav","10 min."),
+   b("21:25","22:00","Jamboree","Melissa's Missteak","eve","Exterior signage. Live music wide and tight. Dancing, singing along. Crowd pan, wrap at 10.","*")],
   shane:shaneDay("Wed","Acquia + Alhambra"),
   zach:zachNight("THU OCT 22 RECAP",
    "WELCOME TO THE GATHERING screen moment, hero speakers from all three stages, VIP seating and airplane snacks, Conference Centre booths, Creator Party.",
@@ -298,17 +296,17 @@ thu:{label:"Thu Oct 22",sub:"Three stages, six night events",
   ["6:30 PM","Aaron","Edit station","Acquia b-roll, Riverview Lounge, Creator Party"],
   ["6:30 PM","Shane","2026 SESSIONS","Wed session edits uploaded, what's left logged"],
   ["9:30 PM","Zach","Starts","Overnight recap begins"],
-  ["10:00 PM","Oliver","Edit station","Linqia, Creator Party, Igloo, Disney Salon, Jamboree"],
-  ["11:00 PM","Bence","Edit station","Good Folk, Fuck Up Nights"],
+  ["7:00 PM","Bence","Edit station","Good Folk setup"],
+  ["10:00 PM","Oliver","Edit station","Linqia, Creator Party, Igloo, Disney Salon, Fuck Up Nights, Jamboree"],
   ["7:30 AM Fri","Zach","Recap folder","THU OCT 22 RECAP uploaded"]],
  cov:[
   ["Creator Party (Disney) @ Terrace","5:30 to 7:30 PM","Aaron + Oliver","Aaron 5:00 to 6:30, Oliver 5:15 to 6:20"],
-  ["Good Folk Supper Club","6:30 to 8:30 PM","Bence","6:00 to 7:30 PM (OT from 6:30)"],
+  ["Good Folk Supper Club","6:30 to 8:30 PM","Bence (setup only)","6:00 to 6:30 PM"],
   ["BSSP Igloo Private Dinner","6:30 to 8:30 PM","Oliver","6:35 to 7:05 PM"],
   ["Disney Salon Dinner @ Grapes","7:30 to 9:00 PM","Oliver","7:20 to 8:15 PM"],
-  ["Fuck Up Nights @ Dusty Boot","8:30 to 11:00 PM","Bence","7:50 to 11:00 PM (OT)"],
-  ["Jamboree @ Melissa's Missteak","8:30 PM to 12:00 AM","Oliver","8:30 to 10:00 PM"]],
- flag:"<b>Not covered:</b> Morning Movement, 7 to 8 AM. Jamboree after 10 PM."},
+  ["Fuck Up Nights @ Dusty Boot","8:30 to 11:00 PM","Oliver","8:30 to 9:15 PM"],
+  ["Jamboree @ Melissa's Missteak","8:30 PM to 12:00 AM","Oliver","9:25 to 10:00 PM"]],
+ flag:"<b>Not covered:</b> Morning Movement, 7 to 8 AM. Good Folk dinner after 6:30 PM. Fuck Up Nights after 9:15 PM. Jamboree after 10 PM."},
 fri:{label:"Fri Oct 23",sub:"Last sessions and the gala",
  people:{
   aaron:[
@@ -326,8 +324,7 @@ fri:{label:"Fri Oct 23",sub:"Last sessions and the gala",
    b("16:30","17:30","Gala room EMPTY","Mainstage (Van Horne)","eve","Full dining setup before doors. Wide, table details, stage screens. Timing depends on the room flip.","*"),
    b("17:30","18:30","Cocktail Hour","Mainstage foyer","eve","Branded bar, drinks, cheers, small groups, connection cards."),
    b("18:30","19:00","Cocktail Hour: room filling","Mainstage foyer","eve","6:45 room filling. Move to the stage side.","o"),
-   b("19:00","22:00","Gala, stage side","Mainstage (Van Horne)","eve","Each BHoF brand (Home Depot, ESPN / Amex, Disney, Budweiser, Chick-fil-A): hero clip on stage with the logo on screen, and trophy hand-off close-up. One Club presentation with Apple on screen. Presenters. Oliver has the room.","*o"),
-   b("22:00","24:00","After Party","Location TBC","eve","You're the only shooter here. DJ wide and tight, dancing, brand activations, candids and groups. 11:00 peak: crowd pan, DJ drop. Friday overtime: 5.5 hrs.","o")],
+   b("19:00","22:00","Gala, stage side","Mainstage (Van Horne)","eve","Each BHoF brand (Home Depot, ESPN / Amex, Disney, Budweiser, Chick-fil-A): hero clip on stage with the logo on screen, and trophy hand-off close-up. One Club presentation with Apple on screen. Presenters. Oliver has the room. Wrap at 10. Friday overtime: 3.5 hrs.","*o")],
   oliver:[
    b("12:00","12:15","Check in","Conference Centre","brk","Check in with Bence."),
    b("12:15","16:15","Linqia sessions","Linqia Stage, Beatty Coleman Room","stage","Last sessions, hero clips, every panelist covered. Breaks: booths #6 to #11, ICA / Eclipse Coffee Lounge, Hall of Fame wall."),
@@ -339,21 +336,20 @@ fri:{label:"Fri Oct 23",sub:"Last sessions and the gala",
   shane:shaneDay("Thu","WestJet, Linqia, Acquia, Inner Sanctums"),
   zach:zachNight("FRI OCT 23 RECAP",
    "last sessions, partner sweep, gala room empty, red carpet, Cocktail Hour.",
-   "the gala is the spine. Each brand on stage, trophy hand-offs, Apple on screen, standing ovations, then the After Party.")
+   "the gala is the spine. Each brand on stage, trophy hand-offs, Apple on screen, standing ovations.")
  },
  drops:[
   ["9:00 AM","Zach's SSD","Shane","Thu sessions SSD pickup"],
   ["6:30 PM","Aaron","Edit station","Acquia b-roll, hotel side, plus Bence's day cards"],
   ["6:30 PM","Shane","2026 SESSIONS","Thu session edits uploaded, what's left logged"],
   ["9:30 PM","Zach","Starts","Overnight recap begins"],
-  ["10:00 PM","Oliver + Bence","Edit station","Gala room side and stage side (Bence swaps cards before the After Party)"],
-  ["12:00 AM","Bence","Edit station","After Party"],
+  ["10:00 PM","Oliver + Bence","Edit station","Gala room side and stage side"],
   ["7:30 AM Sat","Zach","Recap folder","FRI OCT 23 RECAP uploaded"]],
  cov:[
   ["Cocktail Hour","5:30 to 7:00 PM","Aaron + Bence (Oliver backstage)","5:30 to 7:00 PM (Aaron to 6:30)"],
   ["Effies // Brand Hall of Fame Gala","7:00 to 10:00 PM","Bence (stage, OT) + Oliver (room)","7:00 to 10:00 PM"],
-  ["After Party","10:00 PM to late","Bence alone (OT)","10:00 PM to 12:00 AM"]],
- flag:"<b>Not covered:</b> Meditation, 7 to 8 AM. <b>One shooter:</b> After Party (Bence)."},
+  ["After Party","10:00 PM to late","Not covered","None"]],
+ flag:"<b>Not covered:</b> Meditation, 7 to 8 AM. After Party."},
 sat:{label:"Sat Oct 24",sub:"Session editing, shooters off",
  people:{aaron:[],bence:[],oliver:[],shane:shaneDay("Fri","WestJet, Linqia, Acquia"),zach:[]},
  drops:[
@@ -372,7 +368,7 @@ const KNAME={stage:"Stage sessions",act:"Activations, b-roll",eve:"Evening event
 KIND.edit="k-edit";
 
 document.getElementById("roster").innerHTML=
-  `<span><b>Aaron</b> 30 h</span><span><b>Bence</b> 30 h <span class="ot">+ 12.5 h OT</span></span><span><b>Oliver</b> 30 h</span><span><b>Shane</b> 30 h, Thu to Sat</span><span><b>Zach</b> 30 h, Wed to Fri nights</span>`;
+  `<span><b>Aaron</b> 30 h</span><span><b>Bence</b> 30 h <span class="ot">+ 3.5 h OT Fri</span></span><span><b>Oliver</b> 30 h</span><span><b>Shane</b> 30 h, Thu to Sat</span><span><b>Zach</b> 30 h, Wed to Fri nights</span>`;
 
 let current="wed", selected=null;
 const tabs=document.getElementById("tabs");
