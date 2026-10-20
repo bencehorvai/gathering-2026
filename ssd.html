@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>SSD Allocation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: call-sheet header, then one table of drives. */
+:root{--bg:#f2f5f4;--surface:#fff;--ink:#17211f;--muted:#5b6966;--line:#d6dddb;--line-soft:#e8eeec;--accent:#2f5d50;--star:#a8701a;--ok:#2f7a55;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;--body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111715;--surface:#18201e;--ink:#e4ebe9;--muted:#97a6a2;--line:#2b3532;--line-soft:#1f2826;--accent:#7fc0aa;--star:#e0b04a;--ok:#6fd0a0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111715;--surface:#18201e;--ink:#e4ebe9;--muted:#97a6a2;--line:#2b3532;--line-soft:#1f2826;--accent:#7fc0aa;--star:#e0b04a;--ok:#6fd0a0;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 64px}
+.wrap{max-width:900px;margin:0 auto}
+header{border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:0}
+.eyebrow{font:500 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 clamp(30px,6.5vw,46px)/1 var(--display);text-transform:uppercase;margin:6px 0 0;text-wrap:balance}
+.jump{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:8px;scrollbar-width:none}
+.jump::-webkit-scrollbar{display:none}
+.jump a{flex:none;font:500 12px/1 var(--mono);letter-spacing:.03em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.jump a:hover{color:var(--ink);border-color:var(--accent)}
+.jump a:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main>h2:first-child{border-top:0;margin-top:18px}
+h2{font:700 30px/1.05 var(--display);text-transform:uppercase;margin:40px 0 10px;padding-top:6px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:700 21px/1.1 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:26px 0 8px;color:var(--accent)}
+p{margin:0 0 12px;max-width:72ch}
+a{color:var(--accent)}
+ul,ol{padding-left:22px;margin:0 0 14px;max-width:72ch}
+li{margin:4px 0}
+.tw{overflow-x:auto;margin:6px 0 18px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.45}
+tr:first-child td{}
+th{font:500 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;background:var(--line-soft)}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
+@media (max-width:640px){table{font-size:14px;min-width:560px}td:first-child{white-space:normal;min-width:84px}}
+.s{color:var(--star);font-weight:inherit}
+.cb{font-style:normal;display:inline-grid;place-items:center;width:17px;height:17px;border:1.5px solid var(--muted);border-radius:4px;vertical-align:-3px;margin-right:6px;font-size:12px;line-height:1;color:#fff}
+.cb.ok{background:var(--ok);border-color:var(--ok)}
+li:has(.cb){list-style:none;margin-left:-22px}
+figure{margin:10px 0 22px}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff}
+figcaption{font:500 11.5px var(--mono);color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.05em}
+@media (max-width:640px){table{min-width:0}td:first-child{min-width:0}}
+</style></head><body>
+<div class="wrap">
+<style>.sitenav{display:flex;gap:16px;flex-wrap:wrap;font:500 13px/1 var(--mono, ui-monospace, Menlo, monospace);letter-spacing:.04em;text-transform:uppercase;margin:0 auto 12px;max-width:1180px}.sitenav a{color:var(--muted,#5b6966);text-decoration:none;padding:6px 0;border-bottom:2px solid transparent}.sitenav a[aria-current]{color:var(--ink,#17211f);border-color:var(--ink,#17211f)}.sitenav a:focus-visible{outline:2px solid var(--accent,#2f5d50);outline-offset:2px}</style><nav class="sitenav"><a href="index.html">Home</a><a href="schedule.html">Crew schedule</a><a href="shot-lists.html">Shot lists</a><a href="capture-plan.html">Capture plan</a><a href="ssd.html" aria-current="page">SSDs</a></nav>
+
+<header>
+  <div class="eyebrow">Fairmont Banff Springs · Oct 21 to 24, 2026</div>
+  <h1>SSD Allocation</h1>
+</header>
+<main>
+<p style="margin-top:18px">Seven SSDs in total: three for editorial and four for stage capture. Each capture SSD stays with its stage all week, so every drive can be traced back to where it was used.</p><div class="tw"><table><tr><th>SSD<th>Size<th>Use<th>Assigned to<tr><td>LBLD1<td>4 TB<td>Main editorial SSD<td>Zach<tr><td>LBLD2<td>4 TB<td>Main editorial SSD<td>Shane<tr><td>LBLD3<td>4 TB<td>Main backup<td>Edit station<tr><td>BH4TB4<td>4 TB<td>Stage capture<td>WestJet Main Stage<tr><td>BH2TB1<td>2 TB<td>Stage capture<td>Linqia Stage<tr><td>BH2TB2<td>2 TB<td>Stage capture<td>Acquia Stage<tr><td>LBLD4<td>2 TB<td>Stage capture<td>Alhambra (Wed), spare Thu and Fri</table></div><p>Stage SSDs go back to the same stage every morning. Editorial SSDs stay with their editor. LBLD3 stays at the edit station as the backup.</p>
+</main>
+</div>
+</body></html>
