@@ -97,7 +97,7 @@ input:checked~.txt{color:var(--done);text-decoration:line-through;text-decoratio
   <header>
     <div class="eyebrow">The Gathering 2026 · Fairmont Banff Springs · Oct 21 to 23</div>
     <h1>Shot Lists by Shooter</h1>
-    <div class="sync" id="sync"><i></i><span>Ticks save on this phone</span></div>
+    <div class="sync" id="sync"><i></i><span>Connecting</span></div>
   </header>
 
   <div class="rule"><b>Applies everywhere:</b> any signage, brand pop-up or logo, grab a clip even if it's not listed. Logos whole and readable. No empty seats in frame. Best clips have a person, a brand and Banff in one shot.</div>
@@ -110,7 +110,7 @@ input:checked~.txt{color:var(--done);text-decoration:line-through;text-decoratio
     <button class="filter" id="hideDone" aria-pressed="false">Hide done</button>
   </div>
   <div id="list" style="display:flex;flex-direction:column;gap:12px"></div>
-  <p class="note">Your ticks save on this phone and browser only. Use the same phone all day.</p>
+  <p class="note">Ticks sync to every phone within a few seconds. Anyone with the link can tick, so only tick your own list.</p>
 </div>
 
 <script>
@@ -494,8 +494,48 @@ function render(){
   document.querySelectorAll("#list input").forEach(el=>el.onchange=()=>toggle(el.id,el.checked));
 }
 function toggle(id,val){
-  state[id]=val; lsSave(); render();
+  const ts=Date.now();
+  state[id]=val; stamp[id]=ts; queue[id]=Object.assign({id:id,val:val,ts:ts},info(id));
+  lsSave(); saveMeta(); render(); push();
 }
+/* shared ticks: a Google Sheet behind a small Apps Script web app */
+const SYNC_URL="https://script.google.com/macros/s/AKfycbzbr9MxtbkdGy2YUO2rx5MDwhdQuA8hwfOtYG6kCxHHJYdDdN19U-OkrsGbrR8-Alaz-A/exec";
+const LS_T=LS+"-ts", LS_Q=LS+"-queue";
+let stamp={}, queue={}, pushing=false, online=true;
+try{stamp=JSON.parse(localStorage.getItem(LS_T)||"{}")}catch(e){}
+try{queue=JSON.parse(localStorage.getItem(LS_Q)||"{}")}catch(e){}
+function saveMeta(){try{localStorage.setItem(LS_T,JSON.stringify(stamp));localStorage.setItem(LS_Q,JSON.stringify(queue))}catch(e){}}
+function info(id){const[p,d,bi,ii]=id.split("-");const b=((SHOTS[p]||{})[d]||[])[bi];const r=b?b.rows[ii]:null;return{list:(PEOPLE[p]?PEOPLE[p].name:p)+" "+(DAYN[d]?DAYN[d].join(" "):d),item:r?r.text:""}}
+async function push(){
+  const items=Object.values(queue); if(!items.length||pushing)return; pushing=true;
+  try{
+    const r=await fetch(SYNC_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(items)});
+    if(!r.ok)throw 0;
+    for(const it of items)if(queue[it.id]&&queue[it.id].ts===it.ts)delete queue[it.id];
+    saveMeta(); online=true;
+  }catch(e){online=false}
+  pushing=false; status();
+}
+async function pull(){
+  try{
+    const r=await fetch(SYNC_URL+"?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok)throw 0;
+    const m=await r.json(), next={};
+    for(const id in m){next[id]=m[id][0]; stamp[id]=m[id][1]}
+    for(const id in queue)next[id]=queue[id].val;
+    let ch=false; for(const k of new Set([...Object.keys(next),...Object.keys(state)]))if(!!next[k]!==!!state[k]){ch=true;break}
+    state=next; lsSave(); saveMeta(); online=true;
+    if(ch)render();
+  }catch(e){online=false}
+  status();
+}
+function status(){
+  const n=Object.keys(queue).length;
+  if(!online)setSync("ro",n?"Offline, "+n+" tick"+(n>1?"s":"")+" waiting":"Offline, retrying");
+  else if(n)setSync("live","Saving");
+  else setSync("live","Synced with the crew");
+}
+async function syncNow(){await push(); await pull()}
 function setSync(cls,txt){const el=document.getElementById("sync");el.className="sync "+cls;el.querySelector("span").textContent=txt}
 function persistView(){try{localStorage.setItem(LS+"-view",JSON.stringify({who,day}))}catch(e){};try{history.replaceState(null,"","#"+who+"-"+day)}catch(e){}}
 
@@ -509,7 +549,7 @@ state=lsLoad();
 render();
 document.getElementById("hideDone").onclick=e=>{hideDone=!hideDone;e.currentTarget.setAttribute("aria-pressed",hideDone);render()};
 
-setSync("live","Ticks save on this phone");
+setSync("","Connecting");syncNow();setInterval(syncNow,8000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)syncNow()});window.addEventListener("online",syncNow);
 </script>
 
 </body></html>
